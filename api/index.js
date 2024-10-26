@@ -7,9 +7,9 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-const adminRoutes = require('./routes/adminRoutes'); // Admin routes
-const newsRoutes = require('./routes/newsRoutes');   // News routes
-const imageRouter = require('./routes/imageRouter'); // Image routes
+const adminRoutes = require('../routes/adminRoutes'); // Admin routes
+const newsRoutes = require('../routes/newsRoutes');   // News routes
+const imageRouter = require('../routes/imageRouter'); // Image routes
 
 const app = express();
 const PORT = process.env.PORT || 5000;
