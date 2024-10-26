@@ -55,10 +55,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal Server Error' });
 }); 
 
-// Start server
-const server = app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// // Start server
+// const server = app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
+
+// Export app for deployment
+module.exports = app;
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
