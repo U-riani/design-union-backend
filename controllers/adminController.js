@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 // const bcrypt = require('bcrypt');
 
-const adminUsername = admin;
-const adminPassword = yourpassword; 
-const jwtSecret = your_jwt_secret;
+const adminUsername = `admin`;
+const adminPassword = `yourpassword`; 
+const jwtSecret = `your_jwt_secret`;
 
 // Admin login function
 const loginAdmin = async (req, res) => {
