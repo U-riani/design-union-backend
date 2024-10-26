@@ -12,7 +12,7 @@ const newsRoutes = require('../routes/newsRoutes');   // News routes
 const imageRouter = require('../routes/imageRouter'); // Image routes
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT =  5000;
 
 // Middleware
 app.use(cors());
@@ -32,7 +32,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // MongoDB Atlas connection
-const mongoURI = process.env.MONGO_URI; // Store URI in .env
+const mongoURI = `mongodb+srv://sandropapiashvili97:Microlab1@cluster0.wuxg4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`; // Store URI in .env
 
 mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
