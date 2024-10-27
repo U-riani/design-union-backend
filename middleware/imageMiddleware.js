@@ -12,7 +12,7 @@ const upload = multer({
 const uploadToFirebase = (req) => {
   return new Promise((resolve, reject) => {
     if (!req.file) {
-      return reject("No file uploaded.");
+      return reject("No file uploaded error here.");
     }
 
     const fileName = `${Date.now()}${path.extname(req.file.originalname)}`;
