@@ -82,22 +82,32 @@ const deleteNews = async (req, res) => {
 // Update a single news article by ID
 const updateSingleNews = async (req, res) => {
   try {
-    const newsData = {
+    const { id } = req.params;
+    const updatedData = {
       title: req.body.title,
       text: req.body.text,
-      image: req.fileUrl, // The URL from Firebase, if it exists
     };
 
-    const updatedNews = await News.findByIdAndUpdate(req.params.id, newsData, { new: true });
-
-    if (!updatedNews) {
-      return res.status(404).json({ message: 'News not found' });
+    // Add image path if a new image is uploaded
+    if (req.file) {
+      updatedData.image = req.file.path;
     }
 
-    res.status(200).json(updatedNews);
+    // Find and update the news item
+    const singleNews = await News.findByIdAndUpdate(id, updatedData, {
+      new: true,
+      runValidators: true, // Ensure validation is applied
+    });
+
+    if (!singleNews) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    console.log("Updated news:", singleNews); // Debug: log updated news
+    res.status(200).json(singleNews);
   } catch (error) {
-    console.error('Error updating news 1:', error); // Log error
-    res.status(500).json({ message: 'Error updating news 1', error });
+    console.error("Update failed:", error); // Debug: log error if any
+    res.status(500).json({ message: "Failed to update news", error });
   }
 };
 
