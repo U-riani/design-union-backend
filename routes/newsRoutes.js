@@ -60,11 +60,12 @@ const {
 } = require('../controllers/newsControllers');
 const { validateNewsData } = require('../middleware/newsMiddleware');
 const upload = require('../middleware/imageMiddleware'); // Ensure this is imported
+const uploadToFirebase = require('../middleware/imageMiddleware')
 
 const router = express.Router();
 
 // Route to save news
-router.post('/news', upload, validateNewsData, saveNews);
+router.post('/news', uploadToFirebase, validateNewsData, saveNews);
 
 // Route to get all news
 router.get('/news', getAllNews);
