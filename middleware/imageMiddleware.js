@@ -6,7 +6,7 @@ const bucket = require("../firebase"); // Import the bucket from your firebase.j
 const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
   storage: multer.memoryStorage(), // Store file in memory
-}); // 'image' is the field name used to send the image
+}).single("image"); // 'image' is the field name used to send the image
 
 // Upload to Firebase Storage
 const uploadToFirebase = (req, res) => {

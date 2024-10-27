@@ -31,11 +31,11 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // MongoDB Atlas connection
-// const mongoURI = `mongodb+srv://sandropapiashvili97:Microlab1@cluster0.wuxg4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`; // Replace with .env variable for production
-// mongoose
-//   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log('MongoDB connected'))
-//   .catch((err) => console.log('Error connecting to MongoDB:', err));
+const mongoURI = `mongodb+srv://sandropapiashvili97:Microlab1@cluster0.wuxg4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`; // Replace with .env variable for production
+mongoose
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.log('Error connecting to MongoDB:', err));
 
 // Routes
 app.use('/admin', adminRoutes); // Admin routes
