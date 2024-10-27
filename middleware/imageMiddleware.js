@@ -97,6 +97,6 @@ const handleImageUpload = async (req, res, next) => {
 // };
 
 module.exports = {
-  handleImageUpload,
-  updateSingleNews
+  handleImageUpload
+  
 };
