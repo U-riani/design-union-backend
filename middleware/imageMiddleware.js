@@ -52,7 +52,7 @@ const handleImageUpload = async (req, res, next) => {
       next();
     });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).send({error: 'erroria errori'});
   }
 };
 
