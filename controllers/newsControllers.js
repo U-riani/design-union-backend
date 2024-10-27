@@ -84,14 +84,15 @@ const updateSingleNews = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = {
-      title: req.body.title,
-      text: req.body.text,
+      title: 'req.body.title',
+      text: 'req.body.text',
+      image: `https://firebasestorage.googleapis.com/v0/b/uriani.appspot.com/o/1730041945983.jpg?alt=media&token=76d5d15a-8084-4774-898a-ae74e90b9df9`
     };
 
     // Add image path if a new image is uploaded
-    if (req.file) {
-      updatedData.image = req.file.path;
-    }
+    // if (req.file) {
+    //   updatedData.image = req.file.path;
+    // }
 
     // Find and update the news item
     const singleNews = await News.findByIdAndUpdate(id, updatedData, {
