@@ -1,7 +1,7 @@
+const News = require("../models/News"); // Import News model
 const multer = require("multer");
 const path = require("path");
 const bucket = require("../firebase"); // Import the bucket from your firebase.js
-const News = require("../models/news"); // Import News model
 
 // Init upload middleware
 const upload = multer({

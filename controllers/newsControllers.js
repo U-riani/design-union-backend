@@ -1,5 +1,5 @@
 // const News = require("../models/News');
-  // const News = require("../models/News");
+const News = require("../models/News"); // Import News model
 
 // Save news
 const saveNews = async (req, res) => {
