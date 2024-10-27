@@ -61,7 +61,7 @@ const deleteFromFirebase = async (imageUrl) => {
 const handleImageUpload = async (req, res, next) => {
   try {
     await upload.single("image")(req, res, async (err) => {
-      if (err) return res.status(400).json({ message: err.message });
+      if (err) return res.status(400).json({myerr: 'error in imageMiddleware in handleImageUpload',message: err.message });
 
       // Check if a new image is uploaded, then delete the old image if present
       if (req.file) {
