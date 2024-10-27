@@ -22,8 +22,8 @@ const saveNews = async (req, res) => {
 // Get all news
 const getAllNews = async (req, res) => {
   try {
-    const news = await News.find();
-    res.status(200).json(news);
+    // const news = await News.find();
+    res.status(200).json({news: 'fixed'});
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch news", error });
   }
