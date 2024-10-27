@@ -15,7 +15,12 @@ const imageRouter = require('../routes/imageRouter'); // Image routes
 const app = express();
 
 // Middleware
-app.use(cors()); // Enable CORS
+// app.use(cors()); // Enable CORS
+app.use(cors({
+  origin: 'http://localhost:3000', // or '*' for all origins, but be cautious
+  methods: 'GET,POST,PATCH,DELETE',
+  credentials: true // optional, if you need to include cookies or auth headers
+}));
 app.use(helmet()); // Secure app by setting HTTP headers
 app.use(morgan('combined')); // Log requests
 app.use(express.json()); // Parse JSON bodies
