@@ -17,7 +17,7 @@ const app = express();
 // Middleware
 // app.use(cors()); // Enable CORS
 app.use(cors({
-  origin: '*', // or '*' for all origins, but be cautious
+  origin: 'http://localhost:3000', // or '*' for all origins, but be cautious
   methods: 'GET,POST,PATCH,DELETE',
   credentials: true // optional, if you need to include cookies or auth headers
 }));
