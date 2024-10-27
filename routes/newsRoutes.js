@@ -69,6 +69,17 @@ router.post('/news', upload.single('image'), validateNewsData, saveNews);
 // Route to get all news
 router.get('/news', getAllNews);
 
+// for vercel testing
+router.get('/news', async (req, res) => {
+  try {
+
+    res.json({ message: 'News endpoint is working' });
+  }catch(err) {
+    res.json({error:  err.message, myError: 'my error'})
+
+  }
+});
+
 // Route to get a single news article by ID
 router.get('/news/:id', getSingleNews);
 
