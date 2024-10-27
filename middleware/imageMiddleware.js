@@ -1,6 +1,6 @@
 const multer = require('multer');
 const path = require('path');
-const bucket = require('./firebase'); // Import the bucket from your firebase.js
+const bucket = require('../firebase'); // Import the bucket from your firebase.js
 
 // Init upload middleware
 const upload = multer({
