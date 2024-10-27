@@ -86,7 +86,7 @@ const updateSingleNews = async (req, res) => {
     const updatedData = {
       title: req.body.title,
       text: req.body.text,
-      image: req.fileUrl
+      // image: req.fileUrl
     };
 
     // Add image path if a new image is uploaded
