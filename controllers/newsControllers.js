@@ -86,28 +86,24 @@ const updateSingleNews = async (req, res) => {
     const updatedData = {
       title: req.body.title,
       text: req.body.text,
-      image: req.fileUrl
     };
 
-    // Add image path if a new image is uploaded
-    if (req.file) {
-      updatedData.image = req.file.path;
+    // Update image if a new one is uploaded
+    if (req.fileUrl) {
+      updatedData.image = req.fileUrl;
     }
 
-    // Find and update the news item
     const singleNews = await News.findByIdAndUpdate(id, updatedData, {
       new: true,
-      runValidators: true, // Ensure validation is applied
+      runValidators: true,
     });
 
     if (!singleNews) {
       return res.status(404).json({ message: "News not found" });
     }
 
-    console.log("Updated news:", singleNews); // Debug: log updated news
     res.status(200).json(singleNews);
   } catch (error) {
-    console.error("Update failed:", error); // Debug: log error if any
     res.status(500).json({ message: "Failed to update news", error });
   }
 };
