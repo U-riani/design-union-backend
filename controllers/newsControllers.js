@@ -87,12 +87,20 @@ const updateSingleNews = async (req, res) => {
       text: req.body.text,
       image: req.fileUrl, // The URL from Firebase, if it exists
     };
+
     const updatedNews = await News.findByIdAndUpdate(req.params.id, newsData, { new: true });
+
+    if (!updatedNews) {
+      return res.status(404).json({ message: 'News not found' });
+    }
+
     res.status(200).json(updatedNews);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating news', error });
+    console.error('Error updating news 1:', error); // Log error
+    res.status(500).json({ message: 'Error updating news 1', error });
   }
 };
+
 
 // Get the last 5 news articles
 const getLast5News = async (req, res) => {
