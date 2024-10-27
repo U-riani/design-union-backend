@@ -11,6 +11,7 @@ const upload = multer({
 // Upload to Firebase Storage
 const uploadToFirebase = (req) => {
   return new Promise((resolve, reject) => {
+    console.log(req.file) 
     if (!req.file) {
       return reject("No file uploaded error here.");
     }
