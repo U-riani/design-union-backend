@@ -1,4 +1,5 @@
-const News = require("../models/News");
+// const News = require("../models/News');
+  // const News = require("../models/News");
 
 // Save news
 const saveNews = async (req, res) => {
