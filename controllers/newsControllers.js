@@ -84,9 +84,9 @@ const updateSingleNews = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = {
-      title: 'req.body.title',
-      text: 'req.body.text',
-      image: `https://firebasestorage.googleapis.com/v0/b/uriani.appspot.com/o/1730041945983.jpg?alt=media&token=76d5d15a-8084-4774-898a-ae74e90b9df9`
+      title: req.body.title,
+      text: req.body.text,
+      image: req.fileUrl
     };
 
     // Add image path if a new image is uploaded
