@@ -17,13 +17,15 @@ const app = express();
 // Middleware
 // app.use(cors()); // Enable CORS
 app.use(cors({
-  origin: 'http://localhost:3000', // or '*' for all origins, but be cautious
+  origin: 'http://localhost:3000', // Update this to your frontend URL when deploying
   methods: 'GET,POST,PATCH,DELETE',
-  credentials: true // optional, if you need to include cookies or auth headers
+  credentials: true // Optional, for including cookies or auth headers
 }));
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
+
 app.use(helmet()); // Secure app by setting HTTP headers
 app.use(morgan('combined')); // Log requests
-app.use(express.json()); // Parse JSON bodies
 
 // Serve static files from the uploads folder
 app.use('/uploads', express.static('uploads'));
