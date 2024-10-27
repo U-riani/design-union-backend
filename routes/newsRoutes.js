@@ -70,7 +70,7 @@ router.post('/news', upload.single('image'), validateNewsData, saveNews);
 router.get('/news', getAllNews);
 
 // for vercel testing
-router.get('/news', async (req, res) => {
+router.get('/test', async (req, res) => {
   try {
 
     res.json({ message: 'News endpoint is working' });
