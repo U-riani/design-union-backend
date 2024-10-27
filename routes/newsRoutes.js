@@ -59,24 +59,22 @@ const {
   deleteNews 
 } = require('../controllers/newsControllers');
 const { validateNewsData } = require('../middleware/newsMiddleware');
-const upload = require('../middleware/imageMiddleware'); // Ensure this is imported
+const { handleImageUpload } = require('../middleware/imageMiddleware');
 
 const router = express.Router();
 
 // Route to save news
-router.post('/news', upload.single('image'), validateNewsData, saveNews);
+router.post('/news', handleImageUpload, validateNewsData, saveNews);
 
 // Route to get all news
 router.get('/news', getAllNews);
 
-// for vercel testing
+// For Vercel testing
 router.get('/test', async (req, res) => {
   try {
-
     res.json({ message: 'News endpoint is working' });
-  }catch(err) {
-    res.json({error:  err.message, myError: 'my error'})
-
+  } catch (err) {
+    res.json({ error: err.message, myError: 'my error' });
   }
 });
 
@@ -84,7 +82,7 @@ router.get('/test', async (req, res) => {
 router.get('/news/:id', getSingleNews);
 
 // Route to update a single news article by ID
-router.patch('/news/:id', upload.single('image'), updateSingleNews);
+router.patch('/news/:id', handleImageUpload, updateSingleNews);
 
 // Route to delete a single news article by ID
 router.delete('/news/:id', deleteNews);
