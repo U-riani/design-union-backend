@@ -4,6 +4,6 @@ const imageController = require('../controllers/imageController');
 const upload = require('../middleware/imageMiddleware');
 
 // Upload route
-router.post('/upload', upload, imageController.uploadImage);
+router.post('/upload', upload.single('image'), imageController.uploadImage);
 
 module.exports = router;

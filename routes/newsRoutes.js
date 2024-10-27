@@ -60,12 +60,11 @@ const {
 } = require('../controllers/newsControllers');
 const { validateNewsData } = require('../middleware/newsMiddleware');
 const upload = require('../middleware/imageMiddleware'); // Ensure this is imported
-const uploadToFirebase = require('../middleware/imageMiddleware')
 
 const router = express.Router();
 
 // Route to save news
-router.post('/news', uploadToFirebase, validateNewsData, saveNews);
+router.post('/news', upload.single('image'), validateNewsData, saveNews);
 
 // Route to get all news
 router.get('/news', getAllNews);
@@ -74,7 +73,7 @@ router.get('/news', getAllNews);
 router.get('/news/:id', getSingleNews);
 
 // Route to update a single news article by ID
-router.patch('/news/:id', upload, updateSingleNews); // Ensure upload middleware is used
+router.patch('/news/:id', upload.single('image'), updateSingleNews);
 
 // Route to delete a single news article by ID
 router.delete('/news/:id', deleteNews);
