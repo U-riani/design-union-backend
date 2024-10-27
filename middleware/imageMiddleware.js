@@ -1,6 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const bucket = require("../firebase"); // Import the bucket from your firebase.js
+const News = require("../models/news"); // Import News model
 
 // Init upload middleware
 const upload = multer({
@@ -61,7 +62,7 @@ const deleteFromFirebase = async (imageUrl) => {
 const handleImageUpload = async (req, res, next) => {
   try {
     await upload.single("image")(req, res, async (err) => {
-      if (err) return res.status(400).json({myerr: 'error in imageMiddleware in handleImageUpload',message: err.message });
+      if (err) return res.status(400).json({ myerr: 'error in imageMiddleware in handleImageUpload', message: err.message });
 
       // Check if a new image is uploaded, then delete the old image if present
       if (req.file) {
@@ -80,23 +81,6 @@ const handleImageUpload = async (req, res, next) => {
   }
 };
 
-
-
-
-// // Middleware to handle file upload
-// const handleImageUpload = async (req, res, next) => {
-//   try {
-//     await upload.single("image")(req, res, async (err) => {
-//       if (err) return res.status(400).send(err.message);
-//       req.fileUrl = await uploadToFirebase(req);
-//       next();
-//     });
-//   } catch (error) {
-//     return res.status(500).send({error: 'erroria errori'});
-//   }
-// };
-
 module.exports = {
   handleImageUpload
-  
 };
