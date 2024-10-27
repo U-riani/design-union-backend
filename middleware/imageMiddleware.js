@@ -80,34 +80,7 @@ const handleImageUpload = async (req, res, next) => {
   }
 };
 
-// Update a single news article with image replacement
-const updateSingleNews = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedData = {
-      title: req.body.title,
-      text: req.body.text,
-    };
 
-    // Update image if a new one is uploaded
-    if (req.fileUrl) {
-      updatedData.image = req.fileUrl;
-    }
-
-    const singleNews = await News.findByIdAndUpdate(id, updatedData, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!singleNews) {
-      return res.status(404).json({ message: "News not found" });
-    }
-
-    res.status(200).json(singleNews);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to update news", error });
-  }
-};
 
 
 // // Middleware to handle file upload
