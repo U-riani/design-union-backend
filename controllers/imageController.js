@@ -1,7 +1,7 @@
 const Image = require('../models/imageModel'); // Import Image model (optional)
 
 // Handle image upload
-exports.uploadImage = (req, res) => {
+uploadImage = (req, res) => {
   // File upload handling
   if (!req.file) {
     return res.status(400).json({ message: 'No file selected' });
@@ -25,3 +25,5 @@ exports.uploadImage = (req, res) => {
       res.status(500).json({ message: 'Error saving image info', error });
     });
 };
+
+module.exports = uploadImage
