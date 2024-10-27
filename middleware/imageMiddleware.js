@@ -11,9 +11,9 @@ const upload = multer({
 // Upload to Firebase Storage
 const uploadToFirebase = (req) => {
   return new Promise((resolve, reject) => {
-    console.log(req.file) 
+    console.log("Request File:", req.file);
     if (!req.file) {
-      return reject(`modif: ${req} - ${req.file}`)
+      return reject(`modif: ${JSON.stringify(req.file)}`);
     }
 
     const fileName = `${Date.now()}${path.extname(req.file.originalname)}`;
@@ -30,15 +30,18 @@ const uploadToFirebase = (req) => {
     });
 
     stream.on("finish", () => {
-      file.makePublic().then(() => {
-        const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-        resolve(fileUrl);
-      }).catch(reject);
+      file.makePublic()
+        .then(() => {
+          const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+          resolve(fileUrl);
+        })
+        .catch(reject);
     });
 
     stream.end(req.file.buffer);
   });
 };
+
 
 // Middleware to handle file upload
 const handleImageUpload = async (req, res, next) => {
