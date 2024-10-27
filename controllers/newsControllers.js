@@ -86,13 +86,13 @@ const updateSingleNews = async (req, res) => {
     const updatedData = {
       title: req.body.title,
       text: req.body.text,
-      // image: req.fileUrl
+      image: req.fileUrl
     };
 
-    // Add image path if a new image is uploaded
-    // if (req.file) {
-    //   updatedData.image = req.file.path;
-    // }
+    Add image path if a new image is uploaded
+    if (req.file) {
+      updatedData.image = req.file.path;
+    }
 
     // Find and update the news item
     const singleNews = await News.findByIdAndUpdate(id, updatedData, {
