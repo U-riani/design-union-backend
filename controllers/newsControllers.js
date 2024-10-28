@@ -4,7 +4,10 @@ const News = require("../models/News"); // Import News model
 const saveNews = async (req, res) => {
   try {
     const newsData = {
-      title: req.body.title,
+      title: {
+        en: req.body.title.en,
+        ge: req.body.title.ge,
+      },
       text: {
         en: req.body.text.en,
         ge: req.body.text.ge,
@@ -16,7 +19,7 @@ const saveNews = async (req, res) => {
     await newNews.save();
     res.status(201).json(newNews);
   } catch (error) {
-    res.status(500).json({ message: 'Error saving news', error });
+    res.status(500).json({ message: "Error saving news", error });
   }
 };
 
@@ -46,7 +49,10 @@ const updateSingleNews = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = {
-      title: req.body.title,
+      title: {
+        en: req.body.text.en,
+        ge: req.body.text.ge,
+      },
       text: {
         en: req.body.text.en,
         ge: req.body.text.ge,
@@ -78,7 +84,7 @@ const deleteNews = async (req, res) => {
   try {
     const singleNews = await News.findByIdAndDelete(req.params.id);
     if (!singleNews) return res.status(404).json({ message: "News not found" });
-    res.status(200).json({ message: 'News deleted successfully' });
+    res.status(200).json({ message: "News deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete news", error });
   }
@@ -90,7 +96,9 @@ const getLast5News = async (req, res) => {
     const last5News = await News.find().sort({ date: -1 }).limit(5);
     res.status(200).json(last5News);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch the latest 5 news", error });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch the latest 5 news", error });
   }
 };
 
@@ -100,5 +108,5 @@ module.exports = {
   getSingleNews,
   getLast5News,
   updateSingleNews,
-  deleteNews
+  deleteNews,
 };
