@@ -17,7 +17,7 @@ const app = express();
 // Middleware
 // app.use(cors()); // Enable CORS
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://design-union.netlify.app'], // Update this to your frontend URL when deploying
+  origin: ['http://localhost:3000', 'https://design-union.netlify.app/'], // Update this to your frontend URL when deploying
   methods: 'GET,POST,PATCH,DELETE',
   credentials: true // Optional, for including cookies or auth headers
 }));
