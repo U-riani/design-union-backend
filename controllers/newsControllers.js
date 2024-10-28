@@ -1,4 +1,3 @@
-// const News = require("../models/News');
 const News = require("../models/News"); // Import News model
 
 // Save news
@@ -6,9 +5,13 @@ const saveNews = async (req, res) => {
   try {
     const newsData = {
       title: req.body.title,
-      text: req.body.text,
+      text: {
+        en: req.body.text.en,
+        ge: req.body.text.ge,
+      },
       image: req.fileUrl, // The URL from Firebase
     };
+
     const newNews = new News(newsData);
     await newNews.save();
     res.status(201).json(newNews);
@@ -38,55 +41,16 @@ const getSingleNews = async (req, res) => {
   }
 };
 
-// Delete a news by ID
-const deleteNews = async (req, res) => {
-  try {
-    const singleNews = await News.findByIdAndDelete(req.params.id);
-    if (!singleNews) return res.status(404).json({ message: "News not found" });
-    res.status(200).json({ message: 'News deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to delete news", error });
-  }
-};
-
-// // Update a single news article by ID
-// const updateSingleNews = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const updatedData = {
-//       title: req.body.title,
-//       text: req.body.text,
-//     };
-
-//     // Add image path if a new image is uploaded
-//     if (req.file) {
-//       updatedData.image = req.file.path;
-//     }
-
-//     // Find and update the news item
-//     const singleNews = await News.findByIdAndUpdate(id, updatedData, {
-//       new: true,
-//       runValidators: true, // Ensure validation is applied
-//     });
-
-//     if (!singleNews) {
-//       return res.status(404).json({ message: "News not found" });
-//     }
-
-//     console.log("Updated news:", singleNews); // Debug: log updated news
-//     res.status(200).json(singleNews);
-//   } catch (error) {
-//     console.error("Update failed:", error); // Debug: log error if any
-//     res.status(500).json({ message: "Failed to update news", error });
-//   }
-// };
 // Update a single news article by ID
 const updateSingleNews = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = {
       title: req.body.title,
-      text: req.body.text,
+      text: {
+        en: req.body.text.en,
+        ge: req.body.text.ge,
+      },
     };
 
     // Update image if a new one is uploaded
@@ -109,6 +73,16 @@ const updateSingleNews = async (req, res) => {
   }
 };
 
+// Delete a news article by ID
+const deleteNews = async (req, res) => {
+  try {
+    const singleNews = await News.findByIdAndDelete(req.params.id);
+    if (!singleNews) return res.status(404).json({ message: "News not found" });
+    res.status(200).json({ message: 'News deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete news", error });
+  }
+};
 
 // Get the last 5 news articles
 const getLast5News = async (req, res) => {
