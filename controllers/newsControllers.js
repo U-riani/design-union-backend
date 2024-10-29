@@ -93,8 +93,8 @@ const deleteNews = async (req, res) => {
 // Get the last 5 news articles
 const getLast5News = async (req, res) => {
   try {
-    const last5News = await News.find().sort({ date: -1 }).limit(5);
-    res.status(200).json({title: last5News.title, image: last5News.image});
+    const last5News = await News.find().sort({ date: -1 }).limit(5).select("title image");
+    res.status(200).json(last5News);
   } catch (error) {
     res
       .status(500)
