@@ -50,8 +50,8 @@ const updateSingleNews = async (req, res) => {
     const { id } = req.params;
     const updatedData = {
       title: {
-        en: req.body.text.en,
-        ge: req.body.text.ge,
+        en: req.body.title.en,
+        ge: req.body.title.ge,
       },
       text: {
         en: req.body.text.en,
