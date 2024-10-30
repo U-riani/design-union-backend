@@ -63,6 +63,8 @@ const updateSingleNews = async (req, res) => {
     // Update images if new ones are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
       updatedData.images = req.fileUrls;
+      console.log(req.fileUrls)
+      console.log(req)
     }
 
     const singleNews = await News.findByIdAndUpdate(id, updatedData, {
