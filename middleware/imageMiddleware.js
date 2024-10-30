@@ -1,5 +1,3 @@
-// Import dependencies
-const News = require("../models/News"); // Import News model
 const multer = require("multer");
 const path = require("path");
 const bucket = require("../firebase"); // Import the bucket from firebase.js
@@ -59,32 +57,25 @@ const handleImageUpload = async (req, res, next) => {
     await upload.array("images", 10)(req, res, async (err) => {
       if (err) {
         console.error("Multer error:", err);
-        return res
-          .status(400)
-          .json({
-            error: "Error in image upload middleware",
-            message: err.message,
-          });
+        return res.status(400).json({
+          error: "Error in image upload middleware",
+          message: err.message,
+        });
       }
 
-      const newsItem = await News.findById(req.params.id);
-
-      // Delete existing images if new images are uploaded
-      if (newsItem && newsItem.images && req.files) {
-        for (const imageUrl of newsItem.images) {
-          await deleteFromFirebase(imageUrl);
+      // If there are files uploaded, handle them
+      if (req.files) {
+        // Upload each new image to Firebase
+        const imageUrls = [];
+        for (const file of req.files) {
+          const fileUrl = await uploadToFirebase(file);
+          imageUrls.push(fileUrl);
         }
+        
+        // Set the file URLs in the request object to pass to the controller
+        req.fileUrls = imageUrls;
       }
 
-      // Upload each new image to Firebase
-      const imageUrls = [];
-      for (const file of req.files) {
-        const fileUrl = await uploadToFirebase(file);
-        imageUrls.push(fileUrl);
-      }
-
-      // Set the file URLs in the request object to pass to the controller
-      req.fileUrls = imageUrls;
       next();
     });
   } catch (error) {
@@ -94,4 +85,5 @@ const handleImageUpload = async (req, res, next) => {
 
 module.exports = {
   handleImageUpload,
+  deleteFromFirebase, // Export the delete function
 };

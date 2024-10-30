@@ -1,4 +1,5 @@
 const News = require("../models/News"); // Import News model
+const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
 
 // Save news with multiple images
 const saveNews = async (req, res) => {
@@ -79,11 +80,19 @@ const updateSingleNews = async (req, res) => {
   }
 };
 
-// Delete a news article by ID
+// Delete a news article by ID and associated images from Firebase
 const deleteNews = async (req, res) => {
   try {
-    const singleNews = await News.findByIdAndDelete(req.params.id);
+    const singleNews = await News.findById(req.params.id);
     if (!singleNews) return res.status(404).json({ message: "News not found" });
+
+    // Delete images from Firebase
+    for (const imageUrl of singleNews.images) {
+      await deleteFromFirebase(imageUrl);
+    }
+
+    // Delete the news article
+    await News.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "News deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete news", error });
