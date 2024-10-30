@@ -60,11 +60,18 @@ const updateSingleNews = async (req, res) => {
       },
     };
 
+    const singleNewsInfo = await News.findById(req.params.id);
+    if (!singleNewsInfo)
+      return res.status(404).json({ message: "News not found" });
+
+    // Delete images from Firebase
+
     // Update images if new ones are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
+      for (const imageUrl of singleNewsInfo.images) {
+        await deleteFromFirebase(imageUrl);
+      }
       updatedData.images = req.fileUrls;
-      console.log("pirveli",req.fileUrls)
-      console.log("meore", req)
     }
 
     const singleNews = await News.findByIdAndUpdate(id, updatedData, {
@@ -110,7 +117,9 @@ const getLast5News = async (req, res) => {
       .select("title images"); // Updated to retrieve the array of images
     res.status(200).json(last5News);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch the latest 5 news", error });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch the latest 5 news", error });
   }
 };
 
