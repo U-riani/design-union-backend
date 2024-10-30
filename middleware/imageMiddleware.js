@@ -57,7 +57,15 @@ const deleteFromFirebase = async (imageUrl) => {
 const handleImageUpload = async (req, res, next) => {
   try {
     await upload.array("images", 10)(req, res, async (err) => {
-      if (err) return res.status(400).json({ error: "Error in image upload middleware", message: err.message });
+      if (err) {
+        console.error("Multer error:", err);
+        return res
+          .status(400)
+          .json({
+            error: "Error in image upload middleware",
+            message: err.message,
+          });
+      }
 
       const newsItem = await News.findById(req.params.id);
 
