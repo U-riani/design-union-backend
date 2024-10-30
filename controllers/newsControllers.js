@@ -12,7 +12,7 @@ const saveNews = async (req, res) => {
         en: req.body.text.en,
         ge: req.body.text.ge,
       },
-      images: req.fileUrls, // Array of URLs from Firebase
+      images: req.fileUrls || [], // Array of URLs from Firebase
     };
 
     const newNews = new News(newsData);
