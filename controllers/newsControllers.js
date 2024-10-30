@@ -1,6 +1,6 @@
 const News = require("../models/News"); // Import News model
 
-// Save news
+// Save news with multiple images
 const saveNews = async (req, res) => {
   try {
     const newsData = {
@@ -12,7 +12,7 @@ const saveNews = async (req, res) => {
         en: req.body.text.en,
         ge: req.body.text.ge,
       },
-      image: req.fileUrl, // The URL from Firebase
+      images: req.fileUrls, // Array of URLs from Firebase
     };
 
     const newNews = new News(newsData);
@@ -44,7 +44,7 @@ const getSingleNews = async (req, res) => {
   }
 };
 
-// Update a single news article by ID
+// Update a single news article by ID with new images if provided
 const updateSingleNews = async (req, res) => {
   try {
     const { id } = req.params;
@@ -59,9 +59,9 @@ const updateSingleNews = async (req, res) => {
       },
     };
 
-    // Update image if a new one is uploaded
-    if (req.fileUrl) {
-      updatedData.image = req.fileUrl;
+    // Update images if new ones are uploaded
+    if (req.fileUrls && req.fileUrls.length > 0) {
+      updatedData.images = req.fileUrls;
     }
 
     const singleNews = await News.findByIdAndUpdate(id, updatedData, {
@@ -90,15 +90,16 @@ const deleteNews = async (req, res) => {
   }
 };
 
-// Get the last 5 news articles
+// Get the last 5 news articles with title and images
 const getLast5News = async (req, res) => {
   try {
-    const last5News = await News.find().sort({ date: -1 }).limit(5).select("title image");
+    const last5News = await News.find()
+      .sort({ date: -1 })
+      .limit(5)
+      .select("title images"); // Updated to retrieve the array of images
     res.status(200).json(last5News);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed to fetch the latest 5 news", error });
+    res.status(500).json({ message: "Failed to fetch the latest 5 news", error });
   }
 };
 

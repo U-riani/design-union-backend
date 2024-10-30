@@ -1,49 +1,44 @@
+// Import dependencies
 const News = require("../models/News"); // Import News model
 const multer = require("multer");
 const path = require("path");
-const bucket = require("../firebase"); // Import the bucket from your firebase.js
+const bucket = require("../firebase"); // Import the bucket from firebase.js
 
-// Init upload middleware
+// Init upload middleware to handle multiple files in memory
 const upload = multer({
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
-  storage: multer.memoryStorage(), // Store file in memory
+  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB per image
+  storage: multer.memoryStorage(), // Store files in memory
 });
 
-// Upload to Firebase Storage
-const uploadToFirebase = (req) => {
+// Upload to Firebase Storage - modified for multiple files
+const uploadToFirebase = (file) => {
   return new Promise((resolve, reject) => {
-    console.log("Request File (imageMiddleware):", req.file);
-    if (!req.file) {
-      return reject(`No file provided(imageMiddleware): ${JSON.stringify(req.file)}`);
-    }
+    const fileName = `${Date.now()}${path.extname(file.originalname)}`;
+    const storageFile = bucket.file(fileName);
 
-    const fileName = `${Date.now()}${path.extname(req.file.originalname)}`;
-    const file = bucket.file(fileName);
-
-    const stream = file.createWriteStream({
+    const stream = storageFile.createWriteStream({
       metadata: {
-        contentType: req.file.mimetype,
+        contentType: file.mimetype,
       },
     });
 
-    stream.on("error", (error) => {
-      return reject(error.message);
+    stream.on("error", (error) => reject(error.message));
+
+    stream.on("finish", async () => {
+      try {
+        await storageFile.makePublic();
+        const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+        resolve(fileUrl);
+      } catch (error) {
+        reject(error);
+      }
     });
 
-    stream.on("finish", () => {
-      file.makePublic()
-        .then(() => {
-          const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-          resolve(fileUrl);
-        })
-        .catch(reject);
-    });
-
-    stream.end(req.file.buffer);
+    stream.end(file.buffer);
   });
 };
 
-// Delete an image from Firebase
+// Delete an image from Firebase by URL
 const deleteFromFirebase = async (imageUrl) => {
   if (!imageUrl) return;
 
@@ -58,22 +53,30 @@ const deleteFromFirebase = async (imageUrl) => {
   }
 };
 
-// Middleware for handling image upload and replacement
+// Middleware for handling multiple image uploads and replacement
 const handleImageUpload = async (req, res, next) => {
   try {
-    await upload.single("image")(req, res, async (err) => {
-      if (err) return res.status(400).json({ myerr: 'error in imageMiddleware in handleImageUpload', message: err.message });
+    await upload.array("images", 10)(req, res, async (err) => {
+      if (err) return res.status(400).json({ error: "Error in image upload middleware", message: err.message });
 
-      // Check if a new image is uploaded, then delete the old image if present
-      if (req.file) {
-        const newsItem = await News.findById(req.params.id);
-        if (newsItem && newsItem.image) {
-          await deleteFromFirebase(newsItem.image); // Delete existing image
+      const newsItem = await News.findById(req.params.id);
+
+      // Delete existing images if new images are uploaded
+      if (newsItem && newsItem.images && req.files) {
+        for (const imageUrl of newsItem.images) {
+          await deleteFromFirebase(imageUrl);
         }
-
-        // Upload new image and set the file URL in the request object
-        req.fileUrl = await uploadToFirebase(req);
       }
+
+      // Upload each new image to Firebase
+      const imageUrls = [];
+      for (const file of req.files) {
+        const fileUrl = await uploadToFirebase(file);
+        imageUrls.push(fileUrl);
+      }
+
+      // Set the file URLs in the request object to pass to the controller
+      req.fileUrls = imageUrls;
       next();
     });
   } catch (error) {
@@ -82,5 +85,5 @@ const handleImageUpload = async (req, res, next) => {
 };
 
 module.exports = {
-  handleImageUpload
+  handleImageUpload,
 };
