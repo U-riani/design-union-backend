@@ -1,34 +1,37 @@
-require('dotenv').config(); // Load environment variables from .env
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
+require("dotenv").config(); // Load environment variables from .env
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 
 // Import route handlers
-const adminRoutes = require('../routes/adminRoutes'); // Admin routes
-const newsRoutes = require('../routes/newsRoutes');   // News routes
-const imageRouter = require('../routes/imageRouter'); // Image routes
+const adminRoutes = require("../routes/adminRoutes"); // Admin routes
+const newsRoutes = require("../routes/newsRoutes"); // News routes
+const imageRouter = require("../routes/imageRouter"); // Image routes
+const visitRouter = require("../routes/visitRoutes");
 
 // Initialize Express app
 const app = express();
 
 // Middleware
 // app.use(cors()); // Enable CORS
-app.use(cors({
-  origin: ['http://localhost:3000', 'https://design-union.netlify.app'], // Update this to your frontend URL when deploying
-  methods: 'GET,POST,PATCH,DELETE',
-  credentials: true // Optional, for including cookies or auth headers
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://design-union.netlify.app"], // Update this to your frontend URL when deploying
+    methods: "GET,POST,PATCH,DELETE",
+    credentials: true, // Optional, for including cookies or auth headers
+  })
+);
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
 app.use(helmet()); // Secure app by setting HTTP headers
-app.use(morgan('combined')); // Log requests
+app.use(morgan("combined")); // Log requests
 
 // Serve static files from the uploads folder
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 // Rate limiting to prevent abuse
 const limiter = rateLimit({
@@ -37,36 +40,39 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.set('trust proxy', 1); // Trust the first proxy
-
+app.set("trust proxy", 1); // Trust the first proxy
 
 // MongoDB Atlas connection
 const mongoURI = `mongodb+srv://sandropapiashvili97:Microlab1@cluster0.wuxg4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`; // Replace with .env variable for production
 mongoose
   .connect(mongoURI)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.log('Error connecting to MongoDB:', err));
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log("Error connecting to MongoDB:", err));
 
 // Routes
-app.use('/admin', adminRoutes); // Admin routes
-app.use('/api', newsRoutes);    // News routes
+app.use("/admin", adminRoutes); // Admin routes
+app.use("/api", newsRoutes); // News routes
+app.use("/api", visitRouter); // Visits routes
 // app.use('/api', imageRouter); // Uncomment if using image routes
 
 // Default route to check server status
-app.get('/', (req, res) => {
-  res.json({ message: 'Server is running' });
+app.get("/", (req, res) => {
+  res.json({ message: "Server is running" });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Internal Server Error' });
+  res.status(500).json({ message: "Internal Server Error" });
 });
+
+// app.listen(5000, () => console.log('server is running on port 5000'));
 
 // Export app for deployment
 module.exports = app;
 
 // Graceful shutdown (optional, mainly for local use)
-process.on('SIGTERM', () => {
-  console.log('Server terminating');
+process.on("SIGTERM", () => {
+  console.log("Server terminating");
 });
+ 

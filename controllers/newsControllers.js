@@ -60,14 +60,16 @@ const updateSingleNews = async (req, res) => {
       },
     };
 
+    //find news
     const singleNewsInfo = await News.findById(req.params.id);
     if (!singleNewsInfo)
       return res.status(404).json({ message: "News not found" });
 
-    // Delete images from Firebase
+
 
     // Update images if new ones are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
+      // delete all old images
       for (const imageUrl of singleNewsInfo.images) {
         await deleteFromFirebase(imageUrl);
       }
