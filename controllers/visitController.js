@@ -38,7 +38,39 @@ const getAllVisits = async (req, res) => {
   }
 };
 
+// Fetch booked times for a specific date
+const getBookedTimes = async (req, res) => {
+  try {
+    const { date } = req.query;
+    
+    // Ensure the date is in valid format (string to Date object)
+    const startDate = new Date(date);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1); // Set end date to the next day
+
+    // Find all visits within the specified date
+    const visits = await Visit.find({
+      visitDate: {
+        $gte: startDate,
+        $lt: endDate
+      }
+    });
+
+    // Extract booked times from visits
+    const bookedTimes = visits.map(visit => {
+      const visitTime = visit.visitDate.toISOString().split('T')[1].slice(0, 5); // Format: HH:MM
+      return visitTime;
+    });
+
+    return res.status(200).json({ bookedTimes });
+  } catch (error) {
+    console.error("Error fetching booked times:", error);
+    return res.status(500).json({ customError: 'Failed to fetch booked times.' });
+  }
+};
+
 module.exports = {
   bookVisit,
   getAllVisits,
+  getBookedTimes,
 };

@@ -10,7 +10,7 @@ const rateLimit = require("express-rate-limit");
 const adminRoutes = require("../routes/adminRoutes"); // Admin routes
 const newsRoutes = require("../routes/newsRoutes"); // News routes
 const imageRouter = require("../routes/imageRouter"); // Image routes
-const visitRouter = require("../routes/visitRoutes");
+const visitRoutes = require("../routes/visitRoutes");
 
 // Initialize Express app
 const app = express();
@@ -52,7 +52,7 @@ mongoose
 // Routes
 app.use("/admin", adminRoutes); // Admin routes
 app.use("/api", newsRoutes); // News routes
-app.use("/api", visitRouter);
+app.use("/api", visitRoutes);
 // app.use('/api', imageRouter); // Uncomment if using image routes
 
 // Default route to check server status
