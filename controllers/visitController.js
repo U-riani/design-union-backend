@@ -1,56 +1,44 @@
-const Visits = require("../models/Visit");
+const Visit = require('../models/Visit'); // Adjust the path to your Visit model
 
+// Create a new visit
 const bookVisit = async (req, res) => {
-  const { name, email, phone, message, visitDate } = req.body;
-
-  // Basic validation
-  if (!name || !email || !phone || !visitDate) {
-    return res.status(400).json({ customError: "All fields are required." });
-  }
-
   try {
-    // Check for existing visits at the same date and time
-    const existingVisit = await Visits.findOne({ visitDate });
+    const { name, email, phone, message, visitDate } = req.body;
+
+    // Check for existing bookings at the same time
+    const existingVisit = await Visit.findOne({ visitDate });
     if (existingVisit) {
-      return res.status(400).json({ customError: "This time slot is already booked. Please choose another." });
+      return res.status(400).json({ customError: 'This time slot is already booked.' });
     }
 
-    const newVisit = new Visits({ name, email, phone, message, visitDate });
-    await newVisit.save();
+    const newVisit = new Visit({
+      name,
+      email,
+      phone,
+      message,
+      visitDate,
+    });
 
-    res.status(201).json({ message: "Visit successfully booked", newVisit });
+    await newVisit.save();
+    return res.status(201).json({ message: 'Visit booked successfully!', visit: newVisit });
   } catch (error) {
-    res.status(400).json({ customError: "Error in booking visit", error });
+    console.error('Error booking visit:', error);
+    return res.status(500).json({ customError: 'An unexpected error occurred. Please try again.' });
   }
 };
 
-
-const getAvailableTime = async (req, res) => {
+// Get all booked visits
+const getAllVisits = async (req, res) => {
   try {
-    const { date } = req.query; // Expecting a query parameter 'date' in 'YYYY-MM-DD' format
-    const startOfDay = new Date(date);
-    startOfDay.setUTCHours(7, 0, 0, 0); // 11:00 AM in Georgia time (UTC+4)
-
-    const endOfDay = new Date(date);
-    endOfDay.setUTCHours(15, 0, 0, 0); // 7:00 PM in Georgia time (UTC+4)
-
-    // Find visits within the given date range
-    const visits = await Visits.find({
-      visitDate: {
-        $gte: startOfDay,
-        $lte: endOfDay,
-      },
-    });
-
-    res.status(200).json({ bookedVisits: visits });
+    const visits = await Visit.find({});
+    return res.status(200).json(visits);
   } catch (error) {
-    res
-      .status(500)
-      .json({ customError: "Error in retrieving visit information", error });
+    console.error('Error retrieving visits:', error);
+    return res.status(500).json({ customError: 'Failed to retrieve visits.' });
   }
 };
 
 module.exports = {
   bookVisit,
-  getAvailableTime,
+  getAllVisits,
 };
