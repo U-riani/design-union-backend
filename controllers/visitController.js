@@ -1,8 +1,19 @@
 const Visits = require("../models/Visit");
 
 const bookVisit = async (req, res) => {
+  const { name, email, phone, message, visitDate } = req.body;
+
+  // Basic validation
+  if (!name || !email || !phone || !visitDate) {
+    return res.status(400).json({ customError: "All fields are required." });
+  }
+
   try {
-    const { name, email, phone, message, visitDate } = req.body;
+    // Check for existing visits at the same date and time
+    const existingVisit = await Visits.findOne({ visitDate });
+    if (existingVisit) {
+      return res.status(400).json({ customError: "This time slot is already booked. Please choose another." });
+    }
 
     const newVisit = new Visits({ name, email, phone, message, visitDate });
     await newVisit.save();
@@ -12,6 +23,7 @@ const bookVisit = async (req, res) => {
     res.status(400).json({ customError: "Error in booking visit", error });
   }
 };
+
 
 const getAvailableTime = async (req, res) => {
   try {
