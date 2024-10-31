@@ -1,38 +1,28 @@
-const Visit = require("../models/Visit");
+const Visits = require("../models/Visit");
 
 const bookVisit = async (req, res) => {
   try {
-    const { id } = req.params;
-    const data = {
-      name: req.name,
-      email: req.email,
-      phone: req.phone,
-      message: req.message,
-      visitDate: req.visitDate,
-    };
+    const { name, email, phone, message, visitDate } = req.body;
 
-    const newVisit = new Visit(data);
+    const newVisit = new Visits({ name, email, phone, message, visitDate });
     await newVisit.save();
-    res.status(201).json(newVisit)
+    
+    res.status(201).json({ message: "Visit successfully booked", newVisit });
   } catch (error) {
-    res.status(400).json({ costumError: `error in booking visit`, error });
+    res.status(400).json({ customError: "Error in booking visit", error });
   }
-  res.json({ booked: "booked" });
 };
 
-const getAvaliableTime = async (req, res) => {
-  try{
-    const { id } = req.params;
-
-    const visits =  await Visit.find();
-    res.status(200).json(visits)
-
-  }catch(error) {
-    res.status(500).json({costumError: `error in geting info in visitRouter`, error})
+const getAvailableTime = async (req, res) => {
+  try {
+    const visits = await Visits.find();
+    res.status(200).json(visits);
+  } catch (error) {
+    res.status(500).json({ customError: "Error in retrieving visit information", error });
   }
 };
 
 module.exports = {
   bookVisit,
-  getAvaliableTime,
+  getAvailableTime,
 };
