@@ -52,7 +52,7 @@ mongoose
 // Routes
 app.use("/admin", adminRoutes); // Admin routes
 app.use("/api", newsRoutes); // News routes
-app.use("api/visit", visitRoutes);
+app.use("/api/visit", visitRoutes);
 // app.use('/api', imageRouter); // Uncomment if using image routes
 
 // Default route to check server status
