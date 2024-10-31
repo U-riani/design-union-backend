@@ -52,7 +52,7 @@ mongoose
 // Routes
 app.use("/admin", adminRoutes); // Admin routes
 app.use("/api", newsRoutes); // News routes
-app.use("/api", visitRouter); // Visits routes
+app.use("/api", visitRouter);
 // app.use('/api', imageRouter); // Uncomment if using image routes
 
 // Default route to check server status
@@ -66,7 +66,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-// app.listen(5000, () => console.log('server is running on port 5000'));
+app.listen(5000,  () => {
+  console.log('Server is running on port 5000');
+})
+
 
 // Export app for deployment
 module.exports = app;
@@ -75,4 +78,3 @@ module.exports = app;
 process.on("SIGTERM", () => {
   console.log("Server terminating");
 });
- 

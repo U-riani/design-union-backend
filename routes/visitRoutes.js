@@ -6,3 +6,5 @@ const router = express.Router();
 router.post('/visit', bookVisit)
 
 router.get('/visit', getAvaliableTime)
+
+module.exports = router;
