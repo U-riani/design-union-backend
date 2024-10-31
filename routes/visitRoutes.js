@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/book', bookVisit);
 
 // Route for getting all booked visits
-router.get('/', getAllVisits);
+router.get('/all-visits', getAllVisits);
 
 // Route for getting booked times for a specific date
 router.get('/booked-times', getBookedTimes); // Add this line
