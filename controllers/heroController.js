@@ -35,7 +35,7 @@ const createHero = async (req, res) => {
         ge: req.body.text.ge,
         en: req.body.text.en,
       },
-      images: req.fileUrls || [], // Use `fileUrls` from middleware
+      image: req.fileUrls || [], // Use `fileUrls` from middleware
     };
 
     const newHero = new Hero(heroData);
