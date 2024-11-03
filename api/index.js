@@ -11,6 +11,7 @@ const adminRoutes = require("../routes/adminRoutes"); // Admin routes
 const newsRoutes = require("../routes/newsRoutes"); // News routes
 const imageRouter = require("../routes/imageRouter"); // Image routes
 const visitRoutes = require("../routes/visitRoutes");
+const heroRoutes = require('../routes/heroRoutes')
 
 // Initialize Express app
 const app = express();
@@ -53,6 +54,7 @@ mongoose
 app.use("/admin", adminRoutes); // Admin routes
 app.use("/api", newsRoutes); // News routes
 app.use("/api/visit", visitRoutes);
+app.use('/api/heros', heroRoutes)
 // app.use('/api', imageRouter); // Uncomment if using image routes
 
 // Default route to check server status
