@@ -6,7 +6,7 @@ const heroSchema = new mongoose.Schema(
       en: String,
       ge: String, 
     },
-    image: { type: String },
+    images: [{ type: String }],
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }

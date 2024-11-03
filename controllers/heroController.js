@@ -1,32 +1,33 @@
 const Hero = require("../models/Hero");
 const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
 
+// Get all heroes
 const getAllHeros = async (req, res) => {
   try {
     const heros = await Hero.find();
     return res.status(200).json(heros);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error, costumError: "eror in getAll hero" });
+    console.error("Error in getAllHeros:", error);
+    return res.status(500).json({ error, customError: "Error in getAll hero" });
   }
 };
 
+// Get a single hero
 const getSingleHero = async (req, res) => {
   try {
-    const { id } = req.params();
-    const singleHero = await Hero.findById({ id });
+    const { id } = req.params;
+    const singleHero = await Hero.findById(id);
     if (!singleHero) {
-      return res.status(404).json({ message: "News not found" });
+      return res.status(404).json({ message: "Hero not found" });
     }
     return res.status(200).json(singleHero);
   } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ error, costumError: "eror in get single hero" });
+    console.error("Error in getSingleHero:", error);
+    return res.status(500).json({ error, customError: "Error in get single hero" });
   }
 };
 
+// Create a new hero
 const createHero = async (req, res) => {
   try {
     const heroData = {
@@ -34,37 +35,41 @@ const createHero = async (req, res) => {
         ge: req.body.text.ge,
         en: req.body.text.en,
       },
-      image: req.fileUrl,
+      images: req.fileUrls || [], // Use `fileUrls` from middleware
     };
 
     const newHero = new Hero(heroData);
     await newHero.save();
     return res.status(200).json(newHero);
   } catch (error) {
-    console.log(error, "error in create hero");
-    res.status(500).json({ error, costumError: "error in create hero" });
+    console.error("Error in createHero:", error);
+    res.status(500).json({ error, customError: "Error in create hero" });
   }
 };
 
+// Delete a hero
 const deleteHero = async (req, res) => {
   try {
-    const { id } = req.params();
-    const singleHero = await Hero.findById({ id });
+    const { id } = req.params;
+    const singleHero = await Hero.findById(id);
     if (!singleHero) {
-      return res.status(404).json({ message: "no such hero to delete" });
+      return res.status(404).json({ message: "No such hero to delete" });
     }
 
-    await deleteFromFirebase(singleHero.image);
+    // Delete associated image(s) from Firebase
+    if (singleHero.image) {
+      await deleteFromFirebase(singleHero.image);
+    }
 
     await Hero.findByIdAndDelete(id);
-    res.status(200).json({ message: "hero deleted successfully" });
+    res.status(200).json({ message: "Hero deleted successfully" });
   } catch (error) {
-    console.log("error in delete hero", error);
+    console.error("Error in deleteHero:", error);
     return res.status(500).json(error);
   }
 };
 
-// Update a single hero
+// Update a hero
 const updateHero = async (req, res) => {
   try {
     const { id } = req.params;
@@ -75,39 +80,39 @@ const updateHero = async (req, res) => {
       },
     };
 
-    //find hero
-    const singleHeroInfo = await Hero.findById(req.params.id);
-    if (!singleHeroInfo)
-      return res.status(404).json({ message: "hero not found to update" });
-
-    // Update images if new ones are uploaded
-    if (req.fileUrl) {
-      // delete all old images
-
-      await deleteFromFirebase(singleHeroInfo.image.imageUrl);
-
-      updatedData.image = req.fileUrl;
+    // Find existing hero document
+    const singleHeroInfo = await Hero.findById(id);
+    if (!singleHeroInfo) {
+      return res.status(404).json({ message: "Hero not found to update" });
     }
 
-    const singleHero = await Hero.findByIdAndUpdate(id, updatedData, {
+    // Handle image updates if new images are uploaded
+    if (req.fileUrls && req.fileUrls.length > 0) {
+      // Delete old image(s)
+      if (singleHeroInfo.image) {
+        await deleteFromFirebase(singleHeroInfo.image);
+      }
+
+      // Set new images
+      updatedData.image = req.fileUrls;
+    }
+
+    const updatedHero = await Hero.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
     });
 
-    if (!singleHero) {
-      return res.status(404).json({ message: "hero not found" });
-    }
-
-    res.status(200).json(singleHero);
+    res.status(200).json(updatedHero);
   } catch (error) {
+    console.error("Failed to update hero:", error);
     res.status(500).json({ message: "Failed to update hero", error });
   }
 };
 
 module.exports = {
-    getSingleHero,
-    getAllHeros,
-    createHero,
-    deleteHero,
-    updateHero
-}
+  getSingleHero,
+  getAllHeros,
+  createHero,
+  deleteHero,
+  updateHero,
+};
