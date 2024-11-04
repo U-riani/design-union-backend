@@ -31,9 +31,9 @@ const getSinglePartner = async (req, res) => {
 const createPartner = async (req, res) => {
   try {
     const partnerData = {
-      title: {
-        ge: req.body.title.ge,
-        en: req.body.title.en,
+      name: {
+        ge: req.body.name.ge,
+        en: req.body.name.en,
       },
       text: {
         ge: req.body.text.ge,
@@ -79,9 +79,9 @@ const updatePartner = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = {
-      title: {
-        en: req.body.title.en,
-        ge: req.body.title.ge,
+      name: {
+        en: req.body.name.en,
+        ge: req.body.name.ge,
       },
       text: {
         en: req.body.text.en,
