@@ -51,14 +51,15 @@ const createHero = async (req, res) => {
 const deleteHero = async (req, res) => {
   try {
     const { id } = req.params;
+  
     const singleHero = await Hero.findById(id);
     if (!singleHero) {
       return res.status(404).json({ message: "No such hero to delete" });
     }
 
     // Delete associated image(s) from Firebase
-    if (singleHero.image) {
-      await deleteFromFirebase(singleHero.image);
+    if (singleHero.image  && singleHero.image.length > 0) {
+      await deleteFromFirebase(singleHero.image[0]);
     }
 
     await Hero.findByIdAndDelete(id);
@@ -89,8 +90,8 @@ const updateHero = async (req, res) => {
     // Handle image updates if new images are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
       // Delete old image(s)
-      if (singleHeroInfo.image) {
-        await deleteFromFirebase(singleHeroInfo.image);
+      if (singleHeroInfo.image && singleHeroInfo.image.length > 0) {
+        await deleteFromFirebase(singleHeroInfo.image[0]);
       }
 
       // Set new images
