@@ -13,6 +13,7 @@ const imageRouter = require("../routes/imageRouter"); // Image routes
 const visitRoutes = require("../routes/visitRoutes");
 const heroRoutes = require('../routes/heroRoutes')
 const partnersRoutes = require('../routes/partnersRoutes')
+const designersRoutes = require('../routes/designersRoutes')
 
 // Initialize Express app
 const app = express();
@@ -57,6 +58,7 @@ app.use("/api", newsRoutes); // News routes
 app.use("/api/visit", visitRoutes);
 app.use('/api/heros', heroRoutes)
 app.use('/api/partners', partnersRoutes)
+app.use('/api/designers', designersRoutes)
 // app.use('/api', imageRouter); // Uncomment if using image routes
 
 // Default route to check server status
