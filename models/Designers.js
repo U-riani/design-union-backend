@@ -13,7 +13,7 @@ const designersSchema = new mongoose.Schema(
     facebook: {type: String},
     instagram: {type: String},
     behance: {type: String},
-    image: [{ type: String }],
+    images: [{ type: String }],
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }
