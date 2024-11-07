@@ -98,7 +98,7 @@ const updateDesigner = async (req, res) => {
         en: req.body.text.en,
         ge: req.body.text.ge,
       },
-      active: req.body.activeStatus,
+      activeStatus: req.body.activeStatus,
       facebook: req.body.facebook,
       instagram: req.body.instagram,
       behance: req.body.behance,

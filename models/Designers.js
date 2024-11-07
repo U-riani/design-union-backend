@@ -17,7 +17,7 @@ const designersSchema = new mongoose.Schema(
     images: [{ type: String }],
     // profilePhoto: [{ type: String }],
     // projectPhoto: [{ type: String }],
-    active: {type: String, default: false},
+    activeStatus: {type: String, default: false},
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }
