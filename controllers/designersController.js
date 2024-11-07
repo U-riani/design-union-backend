@@ -37,11 +37,11 @@ const createDesigner = async (req, res) => {
     const designerData = {
       name: {
         ge: req.body.name.ge,
-        en: req.body.name.en,
+        en: req.body.name.en || '',
       },
       text: {
-        ge: req.body.text.ge,
-        en: req.body.text.en,
+        ge: req.body.text ? req.body.text.ge : '',
+        en: req.body.text ? req.body.text.en : '',
       },
       facebook: req.body.facebook,
       instagram: req.body.instagram,
@@ -50,6 +50,7 @@ const createDesigner = async (req, res) => {
       // projectPhoto: req.fileUrls[1] ? [req.fileUrls[1]] : [], 
       images: req.fileUrls || [], // Use `fileUrls` from middleware
     };
+    console.log('req.fileUrls')
 
     const newDesigners = new Designers(designerData);
     await newDesigners.save();
