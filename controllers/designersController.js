@@ -37,20 +37,20 @@ const createDesigner = async (req, res) => {
     const designerData = {
       name: {
         ge: req.body.name.ge,
-        en: req.body.name.en || '',
+        en: req.body.name.en || "",
       },
+      companyPerson: req.body.companyPerson,
       text: {
-        ge: req.body.text ? req.body.text.ge : '',
-        en: req.body.text ? req.body.text.en : '',
+        ge: req.body.text ? req.body.text.ge : "",
+        en: req.body.text ? req.body.text.en : "",
       },
       facebook: req.body.facebook,
       instagram: req.body.instagram,
       behance: req.body.behance,
       // profilePhoto: req.fileUrls[0] ? [req.fileUrls[0]] : [],  // Ensure array format
-      // projectPhoto: req.fileUrls[1] ? [req.fileUrls[1]] : [], 
+      // projectPhoto: req.fileUrls[1] ? [req.fileUrls[1]] : [],
       images: req.fileUrls || [], // Use `fileUrls` from middleware
     };
-    console.log('req.fileUrls')
 
     const newDesigners = new Designers(designerData);
     await newDesigners.save();
@@ -93,10 +93,12 @@ const updateDesigner = async (req, res) => {
         en: req.body.name.en,
         ge: req.body.name.ge,
       },
+      companyPerson: req.body.companyPerson,
       text: {
         en: req.body.text.en,
         ge: req.body.text.ge,
       },
+      active: req.body.activeStatus,
       facebook: req.body.facebook,
       instagram: req.body.instagram,
       behance: req.body.behance,
