@@ -46,9 +46,7 @@ const createDesigner = async (req, res) => {
       facebook: req.body.facebook,
       instagram: req.body.instagram,
       behance: req.body.behance,
-      profilePhoto: req.fileUrls || [],
-    projectPhoto: req.fileUrls || [],
-      // images: req.fileUrls || [], // Use `fileUrls` from middleware
+      images: req.fileUrls || [], // Use `fileUrls` from middleware
     };
 
     const newDesigners = new Designers(designerData);
