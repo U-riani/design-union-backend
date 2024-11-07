@@ -116,7 +116,7 @@ const updateDesigner = async (req, res) => {
     if (req.fileUrls && req.fileUrls.length > 0) {
       // Delete old image(s)
       if (singleDesignerInfo.images && singleDesignerInfo.images.length > 0) {
-        singleDesignerInfo.images.forEach(async () => {
+        singleDesignerInfo.images.forEach(async (item) => {
           await deleteFromFirebase(item);
         });
       }
