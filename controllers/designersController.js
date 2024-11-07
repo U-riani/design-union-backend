@@ -112,19 +112,13 @@ const updateDesigner = async (req, res) => {
       return res.status(404).json({ message: "Designer not found to update" });
     }
 
-    // Handle image updates if new images are uploaded
+    // Update images if new ones are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
-      // Delete old image(s)
-      if (singleDesignerInfo.images && singleDesignerInfo.images.length > 0) {
-        singleDesignerInfo.images.forEach(async (item) => {
-          await deleteFromFirebase(item);
-        });
+      // delete all old images
+      for (const imageUrl of singleDesignerInfo.images) {
+        await deleteFromFirebase(imageUrl);
       }
-      // Set new images
-      req.fileUrls.map((item, i) => {
-        updatedData.image = req.fileUrls[i];
-      });
-
+      updatedData.images = req.fileUrls;
     }
 
     const updatedDesigner = await Designers.findByIdAndUpdate(id, updatedData, {
