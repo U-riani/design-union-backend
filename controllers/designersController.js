@@ -72,8 +72,10 @@ const deleteDesigner = async (req, res) => {
     }
 
     // Delete associated image(s) from Firebase
-    if (singleDesigner.image && singleDesigner.image.length > 0) {
-      await deleteFromFirebase(singleDesigner.image[0]);
+    if (singleDesigner.images && singleDesigner.images.length > 0) {
+      singleDesigner.images.forEach(async (item, i) => {
+        await deleteFromFirebase(item);
+      });
     }
 
     await Designers.findByIdAndDelete(id);
@@ -113,12 +115,16 @@ const updateDesigner = async (req, res) => {
     // Handle image updates if new images are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
       // Delete old image(s)
-      if (singleDesignerInfo.image && singleDesignerInfo.image.length > 0) {
-        await deleteFromFirebase(singleDesignerInfo.image[0]);
+      if (singleDesignerInfo.images && singleDesignerInfo.images.length > 0) {
+        singleDesignerInfo.images.forEach(async () => {
+          await deleteFromFirebase(item);
+        });
       }
-
       // Set new images
-      updatedData.image = req.fileUrls;
+      req.fileUrls.map((item, i) => {
+        updatedData.image = req.fileUrls[i];
+      });
+
     }
 
     const updatedDesigner = await Designers.findByIdAndUpdate(id, updatedData, {
