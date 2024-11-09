@@ -14,6 +14,7 @@ const projectsSchema = new mongoose.Schema(
       en: String,
       ge: String, 
     },
+    mainProject: {type: Boolean, default: false},
     image: [{ type: String }],
     // media: [
     //   {
