@@ -12,11 +12,18 @@ const projectsSchema = new mongoose.Schema(
     },
     heroText: {
       en: String,
-      ge: String, 
+      ge: String,
     },
-    
-    mainProject: {type: Boolean, default: false},
-    image: [{ type: String }],
+    mainProject: { type: Boolean, default: false },
+    image: [
+      {
+        image: { type: String },
+        heroText: {
+          en: String,
+          ge: String,
+        },
+      },
+    ],
     // media: [
     //   {
     //     title: {
