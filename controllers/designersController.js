@@ -39,6 +39,7 @@ const createDesigner = async (req, res) => {
         ge: req.body.name.ge,
         en: req.body.name.en || "",
       },
+      activeStatus: req.body.activeStatus,
       companyPerson: req.body.companyPerson,
       text: {
         ge: req.body.text ? req.body.text.ge : "",
