@@ -14,6 +14,7 @@ const visitRoutes = require("../routes/visitRoutes");
 const heroRoutes = require('../routes/heroRoutes')
 const partnersRoutes = require('../routes/partnersRoutes')
 const designersRoutes = require('../routes/designersRoutes')
+const projectsRoutes = require('../routes/projectsRoutes')
 
 // Initialize Express app
 const app = express();
@@ -59,6 +60,7 @@ app.use("/api/visit", visitRoutes);
 app.use('/api/heros', heroRoutes)
 app.use('/api/partners', partnersRoutes)
 app.use('/api/designers', designersRoutes)
+app.use('/api/projects', projectsRoutes)
 // app.use('/api', imageRouter); // Uncomment if using image routes
 
 // Default route to check server status
