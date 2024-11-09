@@ -10,20 +10,13 @@ const projectsSchema = new mongoose.Schema(
       en: String,
       ge: String,
     },
-    // heroText: {
-    //   en: String,
-    //   ge: String,
-    // },
-    heroData: [
-      {
-        heroText: {
-          en: String,
-          ge: String,
-        },
-        images: { type: String },
-      },
-    ],
-    mainProject: { type: Boolean, default: false },
+    heroText: {
+      en: String,
+      ge: String, 
+    },
+    
+    mainProject: {type: Boolean, default: false},
+    image: [{ type: String }],
     // media: [
     //   {
     //     title: {
