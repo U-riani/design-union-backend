@@ -47,7 +47,7 @@ const createProject = async (req, res) => {
             ge: req.body.heroText.ge,
             en: req.body.heroText.en,
           },
-          image: req.fileUrls || [], // Use `fileUrls` from middleware
+          images: req.fileUrls || [], // Use `fileUrls` from middleware
         },
       ],
       // heroText: {
@@ -55,7 +55,7 @@ const createProject = async (req, res) => {
       //   en: req.body.heroText.en,
       // },
       mainProject: req.body.mainProject,
-      image: req.fileUrls || [], // Use `fileUrls` from middleware
+      images: req.fileUrls || [], // Use `fileUrls` from middleware
     };
 
     const newProject = new Projects(projectData);
@@ -123,7 +123,7 @@ const updateProject = async (req, res) => {
       }
 
       // Set new images
-      updatedData.image = req.fileUrls;
+      updatedData.images = req.fileUrls;
     }
 
     const updatedProject = await Projects.findByIdAndUpdate(id, updatedData, {
