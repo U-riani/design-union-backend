@@ -34,12 +34,12 @@ const createProject = async (req, res) => {
   try {
     const projectData = {
       name: {
-        en: req.body.name.ge,
         ge: req.body.name.ge,
+        en: req.body.name.en,
       },
       description: {
-        en: req.body.description.ge,
         ge: req.body.description.ge,
+        en: req.body.description.en,
       },
       heroText: {
         ge: req.body.heroText.ge,
