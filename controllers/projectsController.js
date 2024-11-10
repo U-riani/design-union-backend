@@ -178,7 +178,7 @@ const updateProject = async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       mainProject: req.body.mainProject,
-      heroData: []
+      heroData: req.body.heroData
     };
 
     req.body.heroData.forEach((item, index) => {
