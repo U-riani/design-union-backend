@@ -41,13 +41,17 @@ const createProject = async (req, res) => {
         ge: req.body.description.ge,
         en: req.body.description.en,
       },
-      heroData: [{
-        heroText: {
-          ge: req.body.heroText.ge,
-          en: req.body.heroText.en,
-        },
-        image: req.fileUrls || [],
-      }],
+      heroData: [
+        req.fileUrls.map((el, i) => {
+          return {
+            heroText: {
+              ge: req.body.heroText.ge[i],
+              en: req.body.heroText.en[i],
+            },
+            image: req.fileUrls[i] || [],
+          };
+        }),
+      ],
       mainProject: req.body.mainProject,
       // image: req.fileUrls || [], // Use `fileUrls` from middleware
     };
