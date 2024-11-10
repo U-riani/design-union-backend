@@ -73,10 +73,12 @@ const createProject = async (req, res) => {
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
         console.log("Saving image:", file); // Log for debugging
-        
-        // Handle image saving process
+
+        // If you're using Firebase or a similar service, ensure `file.url` exists
+        const imageUrl = file.url || file.path; // Use the appropriate field based on your file storage method
+
         const newImage = new HeroImage({
-          url: file.url, // URL of the uploaded image
+          url: imageUrl, // Use the correct field (URL or path)
           fileName: file.originalname, // Original file name
         });
 
@@ -116,6 +118,7 @@ const createProject = async (req, res) => {
     return res.status(500).json({ error: error.message, customError: "Error in creating project" });
   }
 };
+
 
 
 // Delete a hero

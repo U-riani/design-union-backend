@@ -90,7 +90,7 @@ const handleImageUpdate = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Error in handleImageUpdate:", error);
-    res.status(500).json({ message: "Error handling image update", error });
+    res.status(500).json({ message: "Error handling projecst Heroimage update", error });
   }
 };
 
