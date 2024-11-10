@@ -188,7 +188,7 @@ const updateProject = async (req, res) => {
           en: item.heroText.en
         },
         image: item.image
-          ? req.fileUrls[index]
+          ? item.image
           : existingProject.heroData[index]?.image || []
       };
       updatedData.heroData.push(hero);
