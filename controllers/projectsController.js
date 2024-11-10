@@ -67,14 +67,14 @@ const getSingleProject = async (req, res) => {
 
 //     // Save image data first
 //     console.log("sndr", req.files[0].originalname);
-//     console.log("sndr111", req.fileUrls); 
+//     console.log("sndr111", req.fileUrls);
 //     const imageUrls = []; // Array to store image document references
 //     if (req.fileUrls && req.fileUrls.length > 0) {
 
 //       req.fileUrls.map(async (el, i) => {
 
 //         console.log("Saving image:", el); // Log for debugging
-       
+
 //         const imageUrl = el || el.path; // Use `file.url` for cloud uploads (Firebase, S3) or `file.path` for local files
 //         if (!imageUrl) {
 //           return res.status(400).json({
@@ -128,15 +128,28 @@ const createProject = async (req, res) => {
   try {
     // Validate required fields
     if (!req.body.heroText || !req.body.heroText.en || !req.body.heroText.ge) {
-      return res.status(400).json({ error: "heroText is required in both languages." });
+      return res
+        .status(400)
+        .json({
+          error: "heroText is required in both languages.",
+          customError: req.body.heroText,
+        });
     }
 
     if (!req.body.name || !req.body.name.en || !req.body.name.ge) {
-      return res.status(400).json({ error: "Project name is required in both languages." });
+      return res
+        .status(400)
+        .json({ error: "Project name is required in both languages." });
     }
 
-    if (!req.body.description || !req.body.description.en || !req.body.description.ge) {
-      return res.status(400).json({ error: "Project description is required in both languages." });
+    if (
+      !req.body.description ||
+      !req.body.description.en ||
+      !req.body.description.ge
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Project description is required in both languages." });
     }
 
     // Ensure req.fileUrls is an array and contains elements
@@ -150,7 +163,7 @@ const createProject = async (req, res) => {
 
     for (const el of req.fileUrls) {
       console.log("Saving image:", el); // Log for debugging
-      
+
       const imageUrl = el || el.path; // Check for URL or path
 
       // If the imageUrl is missing, skip this image
@@ -169,15 +182,17 @@ const createProject = async (req, res) => {
     }
 
     // Create the heroData entry
-    const newHeroData = new HeroData({
-      heroText: {
-        en: req.body.heroText.en,
-        ge: req.body.heroText.ge,
-      },
-      images: imageUrls, // Add the image references here
-    });
+    req.body.herpText.map(async (el, i) => {
+      const newHeroData = new HeroData({
+        el: {
+          en: el.en,
+          ge: el.ge,
+        },
+        images: imageUrls, // Add the image references here
+      });
 
-    const savedHeroData = await newHeroData.save(); // Save HeroData
+      const savedHeroData = await newHeroData.save(); // Save HeroData
+    });
 
     // Create the project with the heroData reference
     const projectData = {
@@ -204,7 +219,6 @@ const createProject = async (req, res) => {
       .json({ error: error.message, customError: "Error in creating project" });
   }
 };
-
 
 // Delete a hero
 const deleteProject = async (req, res) => {
