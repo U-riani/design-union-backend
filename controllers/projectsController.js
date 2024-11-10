@@ -188,8 +188,8 @@ const updateProject = async (req, res) => {
           en: item.heroText.en
         },
         image: item.image
-          ? item.image
-          : existingProject.heroData[index]?.image || []
+        ? existingProject.heroData[index]?.image
+        : item.image
       };
       // updatedData.heroData.push(hero);
     });
