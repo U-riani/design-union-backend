@@ -118,7 +118,7 @@ const updateProject = async (req, res) => {
         },
         image: req.fileUrls[index]  ,
       };
-
+      console.log(req.fileUrls)
       updatedData.heroData.push(hero);
     });
 
