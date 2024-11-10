@@ -31,7 +31,6 @@ const getSingleProject = async (req, res) => {
 
 // Create a new Project
 const createProject = async (req, res) => {
-  console.log(req.body)
   try {
     const projectData = {
       name: {
@@ -42,19 +41,14 @@ const createProject = async (req, res) => {
         ge: req.body.description.ge,
         en: req.body.description.en,
       },
-      heroData: [
-        req.body.heroText.ge.map((el, i) => {
-          return {
-            heroText: {
-              ge: req.body.heroText.ge[i],
-              en: req.body.heroText.en[i],
-            },
-            image: req.fileUrls || [],
-          };
-        }),
-      ],
+      heroData: req.body.heroText.ge.map((_, index) => ({
+        heroText: {
+          ge: req.body.heroText.ge[index],
+          en: req.body.heroText.en[index],
+        },
+        image: req.fileUrls[index], // assuming multiple file URLs
+      })),
       mainProject: req.body.mainProject,
-      // image: req.fileUrls || [], // Use `fileUrls` from middleware
     };
 
     const newProject = new Projects(projectData);
@@ -62,9 +56,10 @@ const createProject = async (req, res) => {
     return res.status(200).json(newProject);
   } catch (error) {
     console.error("Error in createProject:", error);
-    res.status(500).json({ error, customError: "Error in create projects" });
+    res.status(500).json({ error, customError: "Error creating project" });
   }
 };
+
 
 // Delete a hero
 const deleteProject = async (req, res) => {
