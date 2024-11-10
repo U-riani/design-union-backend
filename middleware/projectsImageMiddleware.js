@@ -68,22 +68,57 @@ const handleHeroImageUpload = async (req, res, next) => {
     res.status(500).json({ message: "Error handling hero image upload", error });
   }
 };
-const deleteFromFirebase = async (imageUrl) => {
-    if (!imageUrl) return;
-  
-    // Extract the filename from the URL
-    const fileName = imageUrl.split("/").pop();
-    const file = bucket.file(fileName);
-  
-    try {
-      await file.delete();
-      console.log("hero Image deleted successfully from Firebase:", fileName);
-    } catch (error) {
-      console.error("hero Error deleting image from Firebase:", error);
+
+// Middleware to handle image update (handles replacing images)
+const handleImageUpdate = async (req, res, next) => {
+  try {
+    // Ensure that images are being uploaded
+    if (!req.files || req.files.length === 0) {
+      return next(); // No files to update, skip to next middleware
     }
-  };
+
+    // Upload new images to Firebase
+    const updatedImageUrls = [];
+    for (const file of req.files) {
+      const fileUrl = await uploadToFirebase(file);
+      updatedImageUrls.push(fileUrl);
+    }
+
+    // If there were any old images that need to be deleted
+    if (req.body.oldImages && Array.isArray(req.body.oldImages)) {
+      for (const oldImageUrl of req.body.oldImages) {
+        await deleteFromFirebase(oldImageUrl); // Delete old images from Firebase
+      }
+    }
+
+    // Attach new image URLs to the request for further processing
+    req.updatedImageUrls = updatedImageUrls;
+
+    next();
+  } catch (error) {
+    console.error("Error in handleImageUpdate:", error);
+    res.status(500).json({ message: "Error handling image update", error });
+  }
+};
+
+// Function to delete a file from Firebase Storage
+const deleteFromFirebase = async (imageUrl) => {
+  if (!imageUrl) return;
+
+  // Extract the filename from the URL
+  const fileName = imageUrl.split("/").pop();
+  const file = bucket.file(fileName);
+
+  try {
+    await file.delete();
+    console.log("Image deleted successfully from Firebase:", fileName);
+  } catch (error) {
+    console.error("Error deleting image from Firebase:", error);
+  }
+};
 
 module.exports = {
   handleHeroImageUpload,
+  handleImageUpdate,
   deleteFromFirebase,
 };

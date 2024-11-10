@@ -7,7 +7,7 @@ const {
   updateProject,
 } = require("../controllers/projectsController");
 const { handleImageUpload } = require("../middleware/imageMiddleware");
-const { handleHeroImageUpload } = require("../middleware/projectsImageMiddleware");
+const { handleHeroImageUpload, handleImageUpdate } = require("../middleware/projectsImageMiddleware");
 
 const router = express.Router(); 
 
@@ -19,6 +19,6 @@ router.post("/", handleHeroImageUpload, createProject);
 
 router.delete("/:id", deleteProject);
 
-router.patch("/:id", handleHeroImageUpload, updateProject);
+router.patch("/:id", handleImageUpdate, updateProject);
 
 module.exports = router;

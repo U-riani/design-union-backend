@@ -1,5 +1,5 @@
 const Projects = require("../models/Projects");
-const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
+const { deleteFromFirebase } = require("../middleware/projectsImageMiddleware"); // Import the delete function
 
 // Get all heroes
 const getAllProjects = async (req, res) => {
@@ -167,76 +167,23 @@ const deleteProject = async (req, res) => {
 // };
 const updateProject = async (req, res) => {
   try {
-    const updateProject = async (req, res) => {
-      try {
-        const { id } = req.params;
-        const existingProject = await Projects.findById(id);
-        if (!existingProject) {
-          return res.status(404).json({ message: "Project not found" });
-        }
-
-        const updatedData = {
-          name: req.body.name,
-          description: req.body.description,
-          mainProject: req.body.mainProject,
-          heroData: [], // Make sure to initialize this as an empty array
-        };
-
-        // Loop through heroData and update each item
-        req.body.heroData.forEach((item, index) => {
-          const hero = {
-            heroText: {
-              ge: item.heroText.ge,
-              en: item.heroText.en,
-            },
-            image:
-              req.fileUrls && req.fileUrls[index]
-                ? req.fileUrls[index] // New image if uploaded
-                : existingProject.heroData[index]?.image || [], // Keep existing image if no new one
-          };
-
-          updatedData.heroData.push(hero); // Push the updated hero object into heroData array
-        });
-
-        // Delete old images only when new ones are uploaded
-        if (req.fileUrls) {
-          for (let i = 0; i < existingProject.heroData.length; i++) {
-            if (existingProject.heroData[i].image && req.fileUrls[i]) {
-              // Deleting old images from Firebase if new images are uploaded
-              for (const oldImageUrl of existingProject.heroData[i].image) {
-                await deleteFromFirebase(oldImageUrl);
-              }
-            }
-          }
-        }
-
-        // Update the project with the new data
-        const updatedProject = await Projects.findByIdAndUpdate(
-          id,
-          updatedData,
-          { new: true }
-        );
-
-        // Return the updated project data in the response
-        res.status(200).json(updatedProject); // Return updatedProject instead of req.body
-      } catch (error) {
-        console.error("Error in updateProject:", error);
-        res.status(500).json({ message: "Error updating project", error });
-      }
-    };
     const { id } = req.params;
+
+    // Find the existing project by ID
     const existingProject = await Projects.findById(id);
     if (!existingProject) {
       return res.status(404).json({ message: "Project not found" });
     }
 
+    // Prepare the updated project data
     const updatedData = {
       name: req.body.name,
       description: req.body.description,
       mainProject: req.body.mainProject,
-      heroData: req.body.heroData,
+      heroData: [], // Initialize as empty array
     };
 
+    // Loop through heroData from the request body and update each item
     req.body.heroData.forEach((item, index) => {
       const hero = {
         heroText: {
@@ -244,17 +191,19 @@ const updateProject = async (req, res) => {
           en: item.heroText.en,
         },
         image:
-          req.fileUrls && req.fileUrls[index]
+          req.fileUrls && req.fileUrls[index] // New image if uploaded
             ? req.fileUrls[index]
-            : existingProject.heroData[index]?.image || [],
+            : existingProject.heroData[index]?.image || [], // Keep existing image if no new one
       };
-      // updatedData.heroData.push(hero);
+
+      updatedData.heroData.push(hero); // Push updated hero object into heroData array
     });
 
     // Delete old images only when new ones are uploaded
     if (req.fileUrls) {
       for (let i = 0; i < existingProject.heroData.length; i++) {
         if (existingProject.heroData[i].image && req.fileUrls[i]) {
+          // If a new image is uploaded, delete old images from Firebase
           for (const oldImageUrl of existingProject.heroData[i].image) {
             await deleteFromFirebase(oldImageUrl);
           }
@@ -262,10 +211,13 @@ const updateProject = async (req, res) => {
       }
     }
 
+    // Update the project with the new data
     const updatedProject = await Projects.findByIdAndUpdate(id, updatedData, {
-      new: true,
+      new: true, // Return the updated document
     });
-    res.status(200).json(req.body);
+
+    // Return the updated project data in the response
+    res.status(200).json(updatedProject);
   } catch (error) {
     console.error("Error in updateProject:", error);
     res.status(500).json({ message: "Error updating project", error });
