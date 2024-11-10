@@ -64,30 +64,31 @@ const getSingleProject = async (req, res) => {
 const createProject = async (req, res) => {
   try {
     // Validate required fields
-    
 
     // Save image data first
+    console.log("sndr", req.files[0].originalname);
+    console.log("sndr111", req.fileUrls); 
     const imageUrls = []; // Array to store image document references
-    if (req.files && req.files.length > 0) {
-      for (let file of req.files) {
-        console.log("Saving image:", file); // Log for debugging
+    if (req.fileUrls && req.fileUrls.length > 0) {
 
-        // Determine if the file is a local upload or a cloud upload
-        const imageUrl = file.url || file.path; // Use `file.url` for cloud uploads (Firebase, S3) or `file.path` for local files
+      req.fileUrls.map(async (el, i) => {
 
+        console.log("Saving image:", el); // Log for debugging
+       
+        const imageUrl = el || el.path; // Use `file.url` for cloud uploads (Firebase, S3) or `file.path` for local files
         if (!imageUrl) {
-          return res.status(400).json({ error: `File--${file.url}  --- ${file.path} -- Image URL or file path is required.` });
+          return res.status(400).json({
+            error: `File--${el.url}  --- ${el.path} -- Image URL or file path is required.`,
+          });
         }
-
-        // Create a new HeroImage document
         const newImage = new HeroImage({
-          url: imageUrl, // URL or path to the uploaded image
-          fileName: file.originalname, // Original file name
+          url: el, // URL or path to the uploaded image
+          fileName: req.files[0].originalname, // Original file name
         });
 
         const savedImage = await newImage.save(); // Save the HeroImage document
         imageUrls.push(savedImage._id); // Store the reference to the image document
-      }
+      });
     }
 
     // Create the heroData entry
@@ -118,11 +119,11 @@ const createProject = async (req, res) => {
     return res.status(200).json(newProject); // Return the created project
   } catch (error) {
     console.error("Error in createProject:", error);
-    return res.status(500).json({ error: error.message, customError: "Error in creating project" });
+    return res
+      .status(500)
+      .json({ error: error.message, customError: "Error in creating project" });
   }
 };
-
-
 
 // Delete a hero
 const deleteProject = async (req, res) => {
