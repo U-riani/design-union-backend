@@ -116,22 +116,29 @@ const updateProject = async (req, res) => {
           ge: req.body.heroText.ge[index],
           en: req.body.heroText.en[index],
         },
-        image: req.fileUrls[index]  ,
+        image: req.fileUrls[index],
       };
-      console.log(req.fileUrls)
+      console.log(req.fileUrls);
       updatedData.heroData.push(hero);
     });
 
     // If new images were uploaded, delete old images first
     if (req.fileUrls) {
       for (let i = 0; i < existingProject.heroData.length; i++) {
-        if (existingProject.heroData[i].image && req.fileUrls[i]) {
-          for (const oldImageUrl of existingProject.heroData[i].image) {
-            await deleteFromFirebase(oldImageUrl); // Delete old image from Firebase
-          }
+        for (const oldImageUrl of existingProject.heroData[i].image) {
+          await deleteFromFirebase(oldImageUrl); // Delete old image from Firebase
         }
       }
     }
+    // if (req.fileUrls) {
+    //   for (let i = 0; i < existingProject.heroData.length; i++) {
+    //     if (existingProject.heroData[i].image && req.fileUrls[i]) {
+    //       for (const oldImageUrl of existingProject.heroData[i].image) {
+    //         await deleteFromFirebase(oldImageUrl); // Delete old image from Firebase
+    //       }
+    //     }
+    //   }
+    // }
 
     // Update the project in the database
     const updatedProject = await Projects.findByIdAndUpdate(id, updatedData, {
@@ -144,7 +151,6 @@ const updateProject = async (req, res) => {
     res.status(500).json({ message: "Error updating project", error });
   }
 };
-
 
 module.exports = {
   getSingleProject,
