@@ -30,36 +30,57 @@ const getSingleProject = async (req, res) => {
 };
 
 // Create a new Project
+// const createProject = async (req, res) => {
+//   try {
+//     const projectData = {
+//       name: {
+//         ge: req.body.name.ge,
+//         en: req.body.name.en,
+//       },
+//       description: {
+//         ge: req.body.description.ge,
+//         en: req.body.description.en,
+//       },
+//       heroData: req.body.heroData,
+//       // heroData: req.body.heroText.ge.map((_, index) => ({
+//       //   heroText: {
+//       //     ge: req.body.heroText.ge[index],
+//       //     en: req.body.heroText.en[index],
+//       //   },
+//       //   image: req.fileUrls[index], // assuming multiple file URLs
+//       // })),
+//       mainProject: req.body.mainProject,
+//     };
+
+//     const newProject = new Projects(projectData);
+//     await newProject.save();
+//     return res.status(200).json(newProject);
+//   } catch (error) {
+//     console.error("Error in createProject:", error);
+//     res.status(500).json({ error, customError: "Error creating project" });
+//   }
+// };
 const createProject = async (req, res) => {
   try {
     const projectData = {
-      name: {
-        ge: req.body.name.ge,
-        en: req.body.name.en,
-      },
-      description: {
-        ge: req.body.description.ge,
-        en: req.body.description.en,
-      },
-      heroData: req.body.heroData,
-      // heroData: req.body.heroText.ge.map((_, index) => ({
-      //   heroText: {
-      //     ge: req.body.heroText.ge[index],
-      //     en: req.body.heroText.en[index],
-      //   },
-      //   image: req.fileUrls[index], // assuming multiple file URLs
-      // })),
+      name: req.body.name,
+      description: req.body.description,
       mainProject: req.body.mainProject,
+      heroData: req.body.heroData.map((hero, index) => ({
+        heroText: hero.heroText,
+        image: req.fileUrls[index], // This assumes images correspond to `heroData` entries
+      })),
     };
 
     const newProject = new Projects(projectData);
     await newProject.save();
-    return res.status(200).json(newProject);
+    res.status(200).json(newProject);
   } catch (error) {
     console.error("Error in createProject:", error);
-    res.status(500).json({ error, customError: "Error creating project" });
+    res.status(500).json({ error, message: "Error creating project" });
   }
 };
+
 
 // Delete a hero
 const deleteProject = async (req, res) => {

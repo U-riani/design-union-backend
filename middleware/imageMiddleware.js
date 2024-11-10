@@ -71,7 +71,7 @@ const handleImageUpload = async (req, res, next) => {
           const fileUrl = await uploadToFirebase(file);
           imageUrls.push(fileUrl);
         }
-        
+
         // Set the file URLs in the request object to pass to the controller
         req.fileUrls = imageUrls;
       }

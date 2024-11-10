@@ -39,11 +39,11 @@ const uploadToFirebase = (file) => {
 // Middleware to handle image uploads for hero data
 const handleHeroImageUpload = async (req, res, next) => {
   try {
-    await upload.array("images", 10)(req, res, async (err) => {
+    await upload.array("projectsHeroImages", 10)(req, res, async (err) => {
       if (err) {
-        console.error("Multer error:", err);
+        console.error("hero Multer error:", err);
         return res.status(400).json({
-          error: "Error in image upload middleware",
+          error: "Error in hero image upload middleware",
           message: err.message,
         });
       }
@@ -65,7 +65,7 @@ const handleHeroImageUpload = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in handleHeroImageUpload:", error);
-    res.status(500).json({ message: "Error handling image upload", error });
+    res.status(500).json({ message: "Error handling hero image upload", error });
   }
 };
 const deleteFromFirebase = async (imageUrl) => {
@@ -77,9 +77,9 @@ const deleteFromFirebase = async (imageUrl) => {
   
     try {
       await file.delete();
-      console.log("Image deleted successfully from Firebase:", fileName);
+      console.log("hero Image deleted successfully from Firebase:", fileName);
     } catch (error) {
-      console.error("Error deleting image from Firebase:", error);
+      console.error("hero Error deleting image from Firebase:", error);
     }
   };
 

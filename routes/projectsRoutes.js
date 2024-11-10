@@ -15,7 +15,7 @@ router.get("/", getAllProjects);
 
 router.get("/:id", getSingleProject);
 
-router.post("/", handleImageUpload, createProject);
+router.post("/", handleHeroImageUpload, createProject);
 
 router.delete("/:id", deleteProject);
 
