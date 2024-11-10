@@ -46,7 +46,7 @@ const createProject = async (req, res) => {
           ge: req.body.heroText.ge,
           en: req.body.heroText.en,
         },
-        image: req.fileUrls || [],
+        image: req.fileUrls ,
       }],
       mainProject: req.body.mainProject,
       // image: req.fileUrls || [], // Use `fileUrls` from middleware
