@@ -178,7 +178,7 @@ const updateProject = async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       mainProject: req.body.mainProject,
-      heroData: []
+      heroData: req.body.heroData
     };
 
     req.body.heroData.forEach((item, index) => {
@@ -191,7 +191,7 @@ const updateProject = async (req, res) => {
           ? req.fileUrls[index]
           : existingProject.heroData[index]?.image || []
       };
-      updatedData.heroData.push(hero);
+      // updatedData.heroData.push(hero);
     });
 
     // Delete old images only when new ones are uploaded
