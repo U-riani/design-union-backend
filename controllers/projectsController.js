@@ -187,7 +187,7 @@ const updateProject = async (req, res) => {
           ge: item.heroText.ge,
           en: item.heroText.en
         },
-        image: req.fileUrls
+        image: item.image
           ? req.fileUrls[index]
           : existingProject.heroData[index]?.image || []
       };
