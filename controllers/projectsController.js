@@ -182,7 +182,7 @@ const createProject = async (req, res) => {
     }
 
     // Create the heroData entry
-    req.body.herpText.map(async (el, i) => {
+    req.body.heroText.map(async (el, i) => {
       const newHeroData = new HeroData({
         el: {
           en: el.en,
