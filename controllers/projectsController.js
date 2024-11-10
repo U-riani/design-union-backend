@@ -105,16 +105,16 @@ const updateProject = async (req, res) => {
         en: req.body.description.en,
       },
       mainProject: req.body.mainProject,
-      // heroData: req.body.heroText.ge.map((_, index) => ({
-      //   heroText: {
-      //     ge: req.body.heroText.ge,
-      //     en: req.body.heroText.en,
-      //   },
-      //   image:
-      //     req.fileUrls && req.fileUrls[index]
-      //       ? req.fileUrls[index]
-      //       : existingProject.heroData[index]?.image || [],
-      // })),
+      heroData: req.body.heroText.ge.map((_, index) => ({
+        heroText: {
+          ge: req.body.heroText.ge[index],
+          en: req.body.heroText.en[index],
+        },
+        image:
+          req.fileUrls && req.fileUrls[index]
+            ? req.fileUrls[index]
+            : existingProject.heroData[index]?.image || [],
+      })),
     };
 
     // Delete old images if new images are uploaded
