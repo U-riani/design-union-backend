@@ -16,7 +16,7 @@ const projectsSchema = new mongoose.Schema(
           en: String,
           ge: String,
         },
-        image: { type: String },
+        image: [{ type: String }],
       },
     ],
     mainProject: { type: Boolean, default: false },
