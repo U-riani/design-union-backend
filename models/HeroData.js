@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const heroDataSchema = new mongoose.Schema(
   {
     heroText: {
-      en: { type: String, required: true },
-      ge: { type: String, required: true },
+      en: { type: String,  },
+      ge: { type: String,  },
     },
     images: [
       {
