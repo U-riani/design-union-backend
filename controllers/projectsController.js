@@ -182,6 +182,12 @@ const createProject = async (req, res) => {
     }
 
     // Create the heroData entry
+    // for (const el of req.body.heroText) {
+
+    // }
+
+    const myHeroText = req.body.heroText;
+    return res.status(201).json({myHeroText})
     req.body.heroText.map(async (el, i) => {
       const newHeroData = new HeroData({
         el: {
