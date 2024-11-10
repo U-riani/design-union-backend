@@ -132,74 +132,6 @@ const getSingleProject = async (req, res) => {
 //       .json({ error: error.message, customError: "Error in creating project" });
 //   }
 // };
-// const createProject = async (req, res) => {
-//   try {
-//     // Ensure req.fileUrls is an array and contains elements
-//     if (!req.fileUrls || req.fileUrls.length === 0) {
-//       return res.status(400).json({
-//         error: "Image URLs are required for hero images.",
-//       });
-//     }
-
-//     const imageUrls = []; // Array to store image document references
-
-//     for (const el of req.fileUrls) {
-//       console.log("Saving image:", el);
-
-//       const imageUrl = el || el.path;
-//       if (!imageUrl) {
-//         console.error(`Image URL or file path is missing for:`, el);
-//         continue;
-//       }
-
-//       const newImage = new HeroImage({
-//         url: imageUrl,
-//         fileName: req.files[0].originalname,
-//       });
-
-//       const savedImage = await newImage.save();
-//       imageUrls.push(savedImage._id);
-//     }
-
-//     // Collect heroData references
-//     const heroDataIds = await Promise.all(
-//       req.body.heroText.map(async (el) => {
-//         const newHeroData = new HeroData({
-//           heroText: {
-//             en: el.en,
-//             ge: el.ge,
-//           },
-//           images: imageUrls,
-//         });
-
-//         const savedHeroData = await newHeroData.save();
-//         return savedHeroData._id;
-//       })
-//     );
-
-//     // Create the project with heroData references
-//     const projectData = {
-//       name: {
-//         ge: req.body.name.ge,
-//         en: req.body.name.en,
-//       },
-//       description: {
-//         ge: req.body.description.ge,
-//         en: req.body.description.en,
-//       },
-//       heroData: heroDataIds, // Use the array of heroData IDs
-//       mainProject: req.body.mainProject,
-//     };
-
-//     const newProject = new Projects(projectData);
-//     await newProject.save();
-
-//     return res.status(200).json(newProject);
-//   } catch (error) {
-//     console.error("Error in createProject:", error);
-//     return res.status(500).json({ error: error.message, customError: "Error in creating project" });
-//   }
-// };
 const createProject = async (req, res) => {
   try {
     // Ensure req.fileUrls is an array and contains elements
@@ -229,24 +161,15 @@ const createProject = async (req, res) => {
       imageUrls.push(savedImage._id);
     }
 
-    // Collect heroText references
-    const heroTextIds = await Promise.all(
-      req.body.heroText.map(async (text) => {
-        const newHeroText = new HeroText({
-          en: text.en,
-          ge: text.ge,
-        });
-        const savedHeroText = await newHeroText.save();
-        return savedHeroText._id;
-      })
-    );
-
     // Collect heroData references
     const heroDataIds = await Promise.all(
-      heroTextIds.map(async (textId) => {
+      req.body.heroText.map(async (el) => {
         const newHeroData = new HeroData({
-          heroText: textId, // Reference the saved HeroText ID here
-          images: imageUrls, // Associate images with each HeroData
+          heroText: {
+            en: el.en,
+            ge: el.ge,
+          },
+          images: imageUrls,
         });
 
         const savedHeroData = await newHeroData.save();
