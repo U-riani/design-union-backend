@@ -31,6 +31,7 @@ const getSingleProject = async (req, res) => {
 
 // Create a new Project
 const createProject = async (req, res) => {
+  console.log(req.body)
   try {
     const projectData = {
       name: {
@@ -42,7 +43,7 @@ const createProject = async (req, res) => {
         en: req.body.description.en,
       },
       heroData: [
-        req.fileUrls.map((el, i) => {
+        req.body.heroText.ge.map((el, i) => {
           return {
             heroText: {
               ge: req.body.heroText.ge,
