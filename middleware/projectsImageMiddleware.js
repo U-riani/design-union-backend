@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const bucket = require("../firebase"); // Import the bucket from firebase.js
 
-// Initialize upload middleware to handle multiple files in memory
+// Initialize multer to handle file uploads (in-memory storage)
 const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB per image
   storage: multer.memoryStorage(), // Store files in memory
@@ -39,26 +39,26 @@ const uploadToFirebase = (file) => {
 // Middleware to handle image uploads for hero data
 const handleHeroImageUpload = async (req, res, next) => {
   try {
-    await upload.array("projectsHeroImages", 10)(req, res, async (err) => {
+    // Upload each hero image sent in the form data
+    await upload.array("heroData[0][imageFile]", 10)(req, res, async (err) => {
       if (err) {
-        console.error("hero Multer error:", err);
+        console.error("Multer error:", err);
         return res.status(400).json({
           error: "Error in hero image upload middleware",
           message: err.message,
         });
       }
 
-      // If files are uploaded, process each for heroData
+      // If files are uploaded, process each file for heroData
       if (req.files) {
-        // Array to store URLs for each hero image
         const heroImageUrls = [];
         for (const file of req.files) {
           const fileUrl = await uploadToFirebase(file);
           heroImageUrls.push(fileUrl);
         }
 
-        // Assign image URLs to req.fileUrls for createProject to process
-        req.fileUrls = heroImageUrls;
+        // Assign image URLs to the request for creating projects
+        req.heroImageUrls = heroImageUrls;
       }
       
       next();
@@ -69,7 +69,7 @@ const handleHeroImageUpload = async (req, res, next) => {
   }
 };
 
-// Middleware to handle image update (handles replacing images)
+// Middleware to handle image update (replaces images)
 const handleImageUpdate = async (req, res, next) => {
   try {
     // Ensure that images are being uploaded
@@ -82,13 +82,6 @@ const handleImageUpdate = async (req, res, next) => {
     for (const file of req.files) {
       const fileUrl = await uploadToFirebase(file);
       updatedImageUrls.push(fileUrl);
-    }
-
-    // If there were any old images that need to be deleted
-    if (req.body.oldImages && Array.isArray(req.body.oldImages)) {
-      for (const oldImageUrl of req.body.oldImages) {
-        await deleteFromFirebase(oldImageUrl); // Delete old images from Firebase
-      }
     }
 
     // Attach new image URLs to the request for further processing

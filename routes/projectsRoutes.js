@@ -6,7 +6,12 @@ const {
   deleteProject,
   updateProject,
 } = require("../controllers/projectsController");
-const { handleImageUpload } = require("../middleware/imageMiddleware");
+// const { handleImageUpload } = require("../middleware/imageMiddleware");
+const {
+  handleHeroImageUpload,
+  handleImageUpdate,
+  deleteFromFirebase,
+} = require("../middleware/projectsImageMiddleware");
 
 const router = express.Router();
 
@@ -14,10 +19,10 @@ router.get("/", getAllProjects);
 
 router.get("/:id", getSingleProject);
 
-router.post("/", handleImageUpload, createProject);
+router.post("/", handleHeroImageUpload, createProject);
 
-router.delete("/:id", deleteProject);
+router.delete("/:id",deleteFromFirebase, deleteProject);
 
-router.patch("/:id", handleImageUpload, updateProject);
+router.patch("/:id", handleImageUpdate, updateProject);
 
 module.exports = router;
