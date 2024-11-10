@@ -181,11 +181,11 @@ const updateProject = async (req, res) => {
       heroData: []
     };
 
-    req.body.heroText.ge.forEach((_, index) => {
+    req.body.heroData.forEach((item, index) => {
       const hero = {
         heroText: {
-          ge: req.body.heroText.ge[index],
-          en: req.body.heroText.en[index]
+          ge: item.heroText.ge,
+          en: item.heroText.en
         },
         image: req.fileUrls && req.fileUrls[index]
           ? req.fileUrls[index]
@@ -206,7 +206,7 @@ const updateProject = async (req, res) => {
     }
 
     const updatedProject = await Projects.findByIdAndUpdate(id, updatedData, { new: true });
-    res.status(200).json(updatedProject);
+    res.status(200).json(req.body);
   } catch (error) {
     console.error("Error in updateProject:", error);
     res.status(500).json({ message: "Error updating project", error });
