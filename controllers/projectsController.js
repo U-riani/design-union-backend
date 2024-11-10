@@ -126,32 +126,6 @@ const getSingleProject = async (req, res) => {
 // };
 const createProject = async (req, res) => {
   try {
-    // Validate required fields
-    // if (!req.body.heroText || !req.body.heroText.en || !req.body.heroText.ge) {
-    //   return res
-    //     .status(400)
-    //     .json({
-    //       error: "heroText is required in both languages.",
-    //       customError: req.body.heroText,
-    //     });
-    // }
-
-    // if (!req.body.name || !req.body.name.en || !req.body.name.ge) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Project name is required in both languages." });
-    // }
-
-    // if (
-    //   !req.body.description ||
-    //   !req.body.description.en ||
-    //   !req.body.description.ge
-    // ) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Project description is required in both languages." });
-    // }
-
     // Ensure req.fileUrls is an array and contains elements
     if (!req.fileUrls || req.fileUrls.length === 0) {
       return res.status(400).json({
@@ -162,43 +136,40 @@ const createProject = async (req, res) => {
     const imageUrls = []; // Array to store image document references
 
     for (const el of req.fileUrls) {
-      console.log("Saving image:", el); // Log for debugging
+      console.log("Saving image:", el);
 
-      const imageUrl = el || el.path; // Check for URL or path
-
-      // If the imageUrl is missing, skip this image
+      const imageUrl = el || el.path;
       if (!imageUrl) {
         console.error(`Image URL or file path is missing for:`, el);
         continue;
       }
 
       const newImage = new HeroImage({
-        url: imageUrl, // URL or path to the uploaded image
-        fileName: req.files[0].originalname, // Use the original file name from req.files[0]
+        url: imageUrl,
+        fileName: req.files[0].originalname,
       });
 
-      const savedImage = await newImage.save(); // Save the HeroImage document
-      imageUrls.push(savedImage._id); // Store the reference to the image document
+      const savedImage = await newImage.save();
+      imageUrls.push(savedImage._id);
     }
 
-    // Create the heroData entry
-    for (const el of req.body.heroText) {
-      console.log(el)
-    }
+    // Collect heroData references
+    const heroDataIds = await Promise.all(
+      req.body.heroText.map(async (el) => {
+        const newHeroData = new HeroData({
+          heroText: {
+            en: el.en,
+            ge: el.ge,
+          },
+          images: imageUrls,
+        });
 
-    req.body.heroText.map(async (el, i) => {
-      const newHeroData = new HeroData({
-        el: {
-          en: el.en,
-          ge: el.ge,
-        },
-        images: imageUrls, // Add the image references here
-      });
+        const savedHeroData = await newHeroData.save();
+        return savedHeroData._id;
+      })
+    );
 
-      const savedHeroData = await newHeroData.save(); // Save HeroData
-    });
-
-    // Create the project with the heroData reference
+    // Create the project with heroData references
     const projectData = {
       name: {
         ge: req.body.name.ge,
@@ -208,21 +179,20 @@ const createProject = async (req, res) => {
         ge: req.body.description.ge,
         en: req.body.description.en,
       },
-      heroData: [savedHeroData._id], // Add the heroData reference here
+      heroData: heroDataIds, // Use the array of heroData IDs
       mainProject: req.body.mainProject,
     };
 
     const newProject = new Projects(projectData);
-    await newProject.save(); // Save the Project
+    await newProject.save();
 
-    return res.status(200).json(newProject); // Return the created project
+    return res.status(200).json(newProject);
   } catch (error) {
     console.error("Error in createProject:", error);
-    return res
-      .status(500)
-      .json({ error: error.message, customError: "Error in creating project" });
+    return res.status(500).json({ error: error.message, customError: "Error in creating project" });
   }
 };
+
 
 // Delete a hero
 const deleteProject = async (req, res) => {
