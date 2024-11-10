@@ -116,7 +116,7 @@ const updateProject = async (req, res) => {
           ge: req.body.heroText.ge[index],
           en: req.body.heroText.en[index],
         },
-        image: req.fileUrls && req.fileUrls[index]  ? req.fileUrls[index] : existingProject.heroData[index]?.image || req.fileUrls[index],
+        image: req.fileUrls[index]  ? req.fileUrls[index] : existingProject.heroData[index]?.image || req.fileUrls[index],
       };
 
       updatedData.heroData.push(hero);
