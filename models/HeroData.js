@@ -9,7 +9,7 @@ const heroDataSchema = new mongoose.Schema(
     images: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Image", // Reference to Image model
+        ref: "HeroImage", // Reference to Image model
         required: true,
       },
     ],

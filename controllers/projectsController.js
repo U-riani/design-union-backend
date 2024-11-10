@@ -63,10 +63,18 @@ const getSingleProject = async (req, res) => {
 // };
 const createProject = async (req, res) => {
   try {
+    // Validate required fields
+    if (!req.body.name || !req.body.description || !req.body.heroText) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
     // Save image data first
     const imageUrls = []; // Array to store image document references
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
+        console.log("Saving image:", file); // Log for debugging
+        
+        // Handle image saving process
         const newImage = new HeroImage({
           url: file.url, // URL of the uploaded image
           fileName: file.originalname, // Original file name
@@ -105,9 +113,10 @@ const createProject = async (req, res) => {
     return res.status(200).json(newProject);
   } catch (error) {
     console.error("Error in createProject:", error);
-    return res.status(500).json({ error, customError: "Error in creating project" });
+    return res.status(500).json({ error: error.message, customError: "Error in creating project" });
   }
 };
+
 
 // Delete a hero
 const deleteProject = async (req, res) => {
