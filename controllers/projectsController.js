@@ -46,8 +46,8 @@ const createProject = async (req, res) => {
         req.body.heroText.ge.map((el, i) => {
           return {
             heroText: {
-              ge: req.body.heroText.ge,
-              en: req.body.heroText.en,
+              ge: req.body.heroText.ge[i],
+              en: req.body.heroText.en[i],
             },
             image: req.fileUrls || [],
           };
