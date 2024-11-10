@@ -1,4 +1,7 @@
 const Projects = require("../models/Projects");
+const HeroImage = require("../models/HeroImage");
+const HeroData = require("../models/HeroData");
+
 const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
 
 // Get all heroes
@@ -60,48 +63,49 @@ const getSingleProject = async (req, res) => {
 // };
 const createProject = async (req, res) => {
   try {
-    // Destructure form data
-    const { name, description, mainProject, heroData } = req.body;
+    // Save image data first
+    const imageUrls = []; // Array to store image document references
+    if (req.files && req.files.length > 0) {
+      for (let file of req.files) {
+        const newImage = new HeroImage({
+          url: file.url, // URL of the uploaded image
+          fileName: file.originalname, // Original file name
+        });
 
-    // Initialize an array to hold hero details
-    const heroes = heroData.map((hero, index) => ({
-      heroText: {
-        ge: hero.heroText.ge,
-        en: hero.heroText.en,
-      },
-      image: req.files[`image-${index}`] || null, // Handling multiple images
-    }));
-
-    const projectData = {
-      name: {
-        ge: name.ge,
-        en: name.en,
-      },
-      description: {
-        ge: description.ge,
-        en: description.en,
-      },
-      mainProject,
-      heroes,
-    };
-
-    // Assuming `req.files` contains the uploaded image files, which are handled by the middleware (e.g., Multer).
-    if (req.files) {
-      heroes.forEach((hero, index) => {
-        if (hero.image) {
-          projectData.heroes[index].image = hero.image[0].path; // Store image path after upload
-        }
-      });
+        const savedImage = await newImage.save();
+        imageUrls.push(savedImage._id); // Store the reference to the image document
+      }
     }
 
-    // Create new project document
+    // Create the heroData entry
+    const newHeroData = new HeroData({
+      heroText: req.body.heroText,
+      images: imageUrls, // Add the image references here
+    });
+
+    const savedHeroData = await newHeroData.save();
+
+    // Create the project with the heroData reference
+    const projectData = {
+      name: {
+        ge: req.body.name.ge,
+        en: req.body.name.en,
+      },
+      description: {
+        ge: req.body.description.ge,
+        en: req.body.description.en,
+      },
+      heroData: [savedHeroData._id], // Add the heroData reference here
+      mainProject: req.body.mainProject,
+    };
+
     const newProject = new Projects(projectData);
     await newProject.save();
 
-    res.status(200).json(newProject);
+    return res.status(200).json(newProject);
   } catch (error) {
     console.error("Error in createProject:", error);
-    res.status(500).json({ error, customError: "Error in create project" });
+    return res.status(500).json({ error, customError: "Error in creating project" });
   }
 };
 

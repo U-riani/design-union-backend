@@ -3,33 +3,20 @@ const mongoose = require("mongoose");
 const projectsSchema = new mongoose.Schema(
   {
     name: {
-      en: String,
-      ge: String,
+      en: { type: String, required: true },
+      ge: { type: String, required: true },
     },
     description: {
-      en: String,
-      ge: String,
+      en: { type: String, required: true },
+      ge: { type: String, required: true },
     },
     heroData: [
       {
-        heroText: {
-          en: String,
-          ge: String,
-        },
-        image: [{ type: String }],
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "HeroData", // Reference to HeroData schema
       },
     ],
     mainProject: { type: Boolean, default: false },
-    // media: [
-    //   {
-    //     title: {
-    //       en: String,
-    //       ge: String,
-    //     },
-    //     images: [{ type: String }],
-    //     url: [{ type: String }],
-    //   },
-    // ],
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }
