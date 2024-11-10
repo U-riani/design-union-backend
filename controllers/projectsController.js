@@ -76,7 +76,7 @@ const createProject = async (req, res) => {
         const imageUrl = file.url || file.path; // Use `file.url` for cloud uploads (Firebase, S3) or `file.path` for local files
 
         if (!imageUrl) {
-          return res.status(400).json({ error: "Image URL or file path is required." });
+          return res.status(400).json({ error: `File--${file} -- Image URL or file path is required.` });
         }
 
         // Create a new HeroImage document
