@@ -182,12 +182,10 @@ const createProject = async (req, res) => {
     }
 
     // Create the heroData entry
-    // for (const el of req.body.heroText) {
+    for (const el of req.body.heroText) {
+      console.log(el)
+    }
 
-    // }
-
-    const myHeroText = req.body.heroText;
-    return res.status(201).json(myHeroText)
     req.body.heroText.map(async (el, i) => {
       const newHeroData = new HeroData({
         el: {
@@ -222,7 +220,7 @@ const createProject = async (req, res) => {
     console.error("Error in createProject:", error);
     return res
       .status(500)
-      .json({ error: error.message, customError: "Error in creating project", myHeroText });
+      .json({ error: error.message, customError: "Error in creating project" });
   }
 };
 
