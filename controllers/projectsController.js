@@ -85,6 +85,7 @@ const deleteProject = async (req, res) => {
 };
 
 // Update a Project
+// Update a Project
 const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -94,7 +95,7 @@ const updateProject = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    // Prepare updated data
+    // Prepare updated data for the project
     const updatedData = {
       name: {
         ge: req.body.name.ge,
@@ -105,24 +106,28 @@ const updateProject = async (req, res) => {
         en: req.body.description.en,
       },
       mainProject: req.body.mainProject,
-      heroData: req.body.heroText.ge.map((_, index) => ({
+      heroData: [],
+    };
+
+    // Handle new or existing heroData
+    req.body.heroText.ge.forEach((_, index) => {
+      const hero = {
         heroText: {
           ge: req.body.heroText.ge[index],
           en: req.body.heroText.en[index],
         },
-        image:
-          req.fileUrls && req.fileUrls[index]
-            ? req.fileUrls[index]
-            : existingProject.heroData[index]?.image || [],
-      })),
-    };
+        image: req.fileUrls && req.fileUrls[index] ? req.fileUrls[index] : existingProject.heroData[index]?.image || [],
+      };
 
-    // Delete old images if new images are uploaded
+      updatedData.heroData.push(hero);
+    });
+
+    // If new images were uploaded, delete old images first
     if (req.fileUrls) {
       for (let i = 0; i < existingProject.heroData.length; i++) {
         if (existingProject.heroData[i].image && req.fileUrls[i]) {
           for (const oldImageUrl of existingProject.heroData[i].image) {
-            await deleteFromFirebase(oldImageUrl);
+            await deleteFromFirebase(oldImageUrl); // Delete old image from Firebase
           }
         }
       }
@@ -139,6 +144,7 @@ const updateProject = async (req, res) => {
     res.status(500).json({ message: "Error updating project", error });
   }
 };
+
 
 module.exports = {
   getSingleProject,
