@@ -64,9 +64,9 @@ const getSingleProject = async (req, res) => {
 const createProject = async (req, res) => {
   try {
     // Validate required fields
-    if (!req.body.name || !req.body.description || !req.body.heroText) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+    // if (!req.body.name || !req.body.description || !req.body.heroText) {
+    //   return res.status(400).json({ error: "Missing required fields" });
+    // }
 
     // Save image data first
     const imageUrls = []; // Array to store image document references
