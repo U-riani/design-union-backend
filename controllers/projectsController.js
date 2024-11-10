@@ -30,32 +30,78 @@ const getSingleProject = async (req, res) => {
 };
 
 // Create a new Project
+// const createProject = async (req, res) => {
+//   try {
+//     const projectData = {
+//       name: {
+//         ge: req.body.name.ge,
+//         en: req.body.name.en,
+//       },
+//       description: {
+//         ge: req.body.description.ge,
+//         en: req.body.description.en,
+//       },
+
+//       heroText: {
+//         ge: req.body.heroText.ge,
+//         en: req.body.heroText.en,
+//       },
+//       mainProject: req.body.mainProject ,
+//       image: req.fileUrls || [], // Use `fileUrls` from middleware
+//     };
+
+//     const newProject = new Projects(projectData);
+//     await newProject.save();
+//     return res.status(200).json(newProject);
+//   } catch (error) {
+//     console.error("Error in createProject:", error);
+//     res.status(500).json({ error, customError: "Error in create projects" });
+//   }
+// };
 const createProject = async (req, res) => {
   try {
+    // Destructure form data
+    const { name, description, mainProject, heroData } = req.body;
+
+    // Initialize an array to hold hero details
+    const heroes = heroData.map((hero, index) => ({
+      heroText: {
+        ge: hero.heroText.ge,
+        en: hero.heroText.en,
+      },
+      image: req.files[`image-${index}`] || null, // Handling multiple images
+    }));
+
     const projectData = {
       name: {
-        ge: req.body.name.ge,
-        en: req.body.name.en,
+        ge: name.ge,
+        en: name.en,
       },
       description: {
-        ge: req.body.description.ge,
-        en: req.body.description.en,
+        ge: description.ge,
+        en: description.en,
       },
-      
-      heroText: {
-        ge: req.body.heroText.ge,
-        en: req.body.heroText.en,
-      },
-      mainProject: req.body.mainProject ,
-      image: req.fileUrls || [], // Use `fileUrls` from middleware
+      mainProject,
+      heroes,
     };
 
+    // Assuming `req.files` contains the uploaded image files, which are handled by the middleware (e.g., Multer).
+    if (req.files) {
+      heroes.forEach((hero, index) => {
+        if (hero.image) {
+          projectData.heroes[index].image = hero.image[0].path; // Store image path after upload
+        }
+      });
+    }
+
+    // Create new project document
     const newProject = new Projects(projectData);
     await newProject.save();
-    return res.status(200).json(newProject);
+
+    res.status(200).json(newProject);
   } catch (error) {
     console.error("Error in createProject:", error);
-    res.status(500).json({ error, customError: "Error in create projects" });
+    res.status(500).json({ error, customError: "Error in create project" });
   }
 };
 
@@ -101,7 +147,7 @@ const updateProject = async (req, res) => {
       },
     };
 
-    // Find existing hero document
+    // Find existing project document
     const singleProjectInfo = await Projects.findById(id);
     if (!singleProjectInfo) {
       return res.status(404).json({ message: "Project not found to update" });
@@ -125,8 +171,8 @@ const updateProject = async (req, res) => {
 
     res.status(200).json(updatedProject);
   } catch (error) {
-    console.error("Failed to update hero:", error);
-    res.status(500).json({ message: "Failed to update hero", error });
+    console.error("Failed to update project:", error);
+    res.status(500).json({ message: "Failed to update project", error });
   }
 };
 
