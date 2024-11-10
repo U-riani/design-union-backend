@@ -41,13 +41,14 @@ const createProject = async (req, res) => {
         ge: req.body.description.ge,
         en: req.body.description.en,
       },
-      heroData: req.body.heroText.ge.map((_, index) => ({
-        heroText: {
-          ge: req.body.heroText.ge[index],
-          en: req.body.heroText.en[index],
-        },
-        image: req.fileUrls[index], // assuming multiple file URLs
-      })),
+      heroData: req.body.heroData,
+      // heroData: req.body.heroText.ge.map((_, index) => ({
+      //   heroText: {
+      //     ge: req.body.heroText.ge[index],
+      //     en: req.body.heroText.en[index],
+      //   },
+      //   image: req.fileUrls[index], // assuming multiple file URLs
+      // })),
       mainProject: req.body.mainProject,
     };
 
