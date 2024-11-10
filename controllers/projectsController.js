@@ -191,7 +191,7 @@ const updateProject = async (req, res) => {
           ? item.image
           : existingProject.heroData[index]?.image || []
       };
-      updatedData.heroData.push(hero);
+      // updatedData.heroData.push(hero);
     });
 
     // Delete old images only when new ones are uploaded
