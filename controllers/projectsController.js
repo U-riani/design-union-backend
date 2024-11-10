@@ -127,30 +127,30 @@ const getSingleProject = async (req, res) => {
 const createProject = async (req, res) => {
   try {
     // Validate required fields
-    if (!req.body.heroText || !req.body.heroText.en || !req.body.heroText.ge) {
-      return res
-        .status(400)
-        .json({
-          error: "heroText is required in both languages.",
-          customError: req.body.heroText,
-        });
-    }
+    // if (!req.body.heroText || !req.body.heroText.en || !req.body.heroText.ge) {
+    //   return res
+    //     .status(400)
+    //     .json({
+    //       error: "heroText is required in both languages.",
+    //       customError: req.body.heroText,
+    //     });
+    // }
 
-    if (!req.body.name || !req.body.name.en || !req.body.name.ge) {
-      return res
-        .status(400)
-        .json({ error: "Project name is required in both languages." });
-    }
+    // if (!req.body.name || !req.body.name.en || !req.body.name.ge) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Project name is required in both languages." });
+    // }
 
-    if (
-      !req.body.description ||
-      !req.body.description.en ||
-      !req.body.description.ge
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Project description is required in both languages." });
-    }
+    // if (
+    //   !req.body.description ||
+    //   !req.body.description.en ||
+    //   !req.body.description.ge
+    // ) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Project description is required in both languages." });
+    // }
 
     // Ensure req.fileUrls is an array and contains elements
     if (!req.fileUrls || req.fileUrls.length === 0) {
