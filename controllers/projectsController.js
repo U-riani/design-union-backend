@@ -60,7 +60,6 @@ const createProject = async (req, res) => {
   }
 };
 
-
 // Delete a hero
 const deleteProject = async (req, res) => {
   try {
@@ -71,9 +70,10 @@ const deleteProject = async (req, res) => {
       return res.status(404).json({ message: "No such Project to delete" });
     }
 
-    // Delete associated image(s) from Firebase
-    if (singleProject.image && singleProject.image.length > 0) {
-      await deleteFromFirebase(singleProject.image[0]);
+    // Delete each image associated with the project from Firebase
+    for (const hero of singleProject.heroData) {
+      console.log(hero);
+      await deleteFromFirebase(hero.image[0]);
     }
 
     await Projects.findByIdAndDelete(id);
@@ -88,47 +88,55 @@ const deleteProject = async (req, res) => {
 const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
+    const existingProject = await Projects.findById(id);
+
+    if (!existingProject) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Prepare updated data
     const updatedData = {
       name: {
-        en: req.body.name.ge,
         ge: req.body.name.ge,
+        en: req.body.name.en,
       },
       description: {
-        en: req.body.description.ge,
         ge: req.body.description.ge,
+        en: req.body.description.en,
       },
-      heroText: {
-        en: req.body.heroText.en,
-        ge: req.body.heroText.ge,
-      },
+      mainProject: req.body.mainProject,
+      heroData: req.body.heroText.ge.map((_, index) => ({
+        heroText: {
+          ge: req.body.heroText.ge,
+          en: req.body.heroText.en,
+        },
+        image:
+          req.fileUrls && req.fileUrls[index]
+            ? req.fileUrls[index]
+            : existingProject.heroData[index]?.image || [],
+      })),
     };
 
-    // Find existing hero document
-    const singleProjectInfo = await Projects.findById(id);
-    if (!singleProjectInfo) {
-      return res.status(404).json({ message: "Project not found to update" });
-    }
-
-    // Handle image updates if new images are uploaded
-    if (req.fileUrls && req.fileUrls.length > 0) {
-      // Delete old image(s)
-      if (singleProjectInfo.image && singleProjectInfo.image.length > 0) {
-        await deleteFromFirebase(singleProjectInfo.image[0]);
+    // Delete old images if new images are uploaded
+    if (req.fileUrls) {
+      for (let i = 0; i < existingProject.heroData.length; i++) {
+        if (existingProject.heroData[i].image && req.fileUrls[i]) {
+          for (const oldImageUrl of existingProject.heroData[i].image) {
+            await deleteFromFirebase(oldImageUrl);
+          }
+        }
       }
-
-      // Set new images
-      updatedData.image = req.fileUrls;
     }
 
+    // Update the project in the database
     const updatedProject = await Projects.findByIdAndUpdate(id, updatedData, {
       new: true,
-      runValidators: true,
     });
 
     res.status(200).json(updatedProject);
   } catch (error) {
-    console.error("Failed to update hero:", error);
-    res.status(500).json({ message: "Failed to update hero", error });
+    console.error("Error in updateProject:", error);
+    res.status(500).json({ message: "Error updating project", error });
   }
 };
 
