@@ -126,62 +126,71 @@ const getSingleProject = async (req, res) => {
 // };
 const createProject = async (req, res) => {
   try {
-    const imageUrls = []; // Array to store image document references
-    if (req.files && req.files.length > 0) {
-      // Save each image file and create HeroImage documents
-      for (const file of req.files) {
-        const newImage = new HeroImage({
-          url: file.path, // Use path if files are stored locally; replace with url if using cloud
-          fileName: file.originalname,
-        });
-        const savedImage = await newImage.save();
-        imageUrls.push(savedImage._id);
-      }
+    // Validate required fields
+
+    // Ensure req.fileUrls is an array and contains elements
+    if (!req.fileUrls || req.fileUrls.length === 0) {
+      return res.status(400).json({
+        error: "Image URLs are required for hero images.",
+      });
     }
 
-    // Map over heroData entries dynamically from req.body
-    const heroes = [];
-    Object.keys(req.body).forEach((key) => {
-      const match = key.match(/heroData\[(\d+)\]\[heroText\]\[(ge|en)\]/);
-      if (match) {
-        const [_, index, lang] = match;
-        if (!heroes[index]) heroes[index] = { heroText: {} };
-        heroes[index].heroText[lang] = req.body[key];
+    const imageUrls = []; // Array to store image document references
+
+    for (const el of req.fileUrls) {
+      console.log("Saving image:", el); // Log for debugging
+      
+      const imageUrl = el || el.path; // Check for URL or path
+
+      // If the imageUrl is missing, skip this image
+      if (!imageUrl) {
+        console.error(`Image URL or file path is missing for:`, el);
+        continue;
       }
+
+      const newImage = new HeroImage({
+        url: imageUrl, // URL or path to the uploaded image
+        fileName: req.files[0].originalname, // Use the original file name from req.files[0]
+      });
+
+      const savedImage = await newImage.save(); // Save the HeroImage document
+      imageUrls.push(savedImage._id); // Store the reference to the image document
+    }
+
+    // Create the heroData entry
+    const newHeroData = new HeroData({
+      heroText: {
+        en: req.body.heroText.en,
+        ge: req.body.heroText.ge,
+      },
+      images: imageUrls, // Add the image references here
     });
 
-    // Create HeroData documents for each hero
-    const heroDataIds = [];
-    for (const hero of heroes) {
-      const newHeroData = new HeroData({
-        heroText: hero.heroText,
-        images: imageUrls, // Associate all images with each hero entry for now
-      });
-      const savedHeroData = await newHeroData.save();
-      heroDataIds.push(savedHeroData._id);
-    }
+    const savedHeroData = await newHeroData.save(); // Save HeroData
 
-    // Create the project with the heroData references
+    // Create the project with the heroData reference
     const projectData = {
       name: {
-        ge: req.body["name[ge]"],
-        en: req.body["name[en]"],
+        ge: req.body.name.ge,
+        en: req.body.name.en,
       },
       description: {
-        ge: req.body["description[ge]"],
-        en: req.body["description[en]"],
+        ge: req.body.description.ge,
+        en: req.body.description.en,
       },
-      heroData: heroDataIds,
-      mainProject: req.body.mainProject === "true",
+      heroData: [savedHeroData._id], // Add the heroData reference here
+      mainProject: req.body.mainProject,
     };
 
     const newProject = new Projects(projectData);
-    await newProject.save();
+    await newProject.save(); // Save the Project
 
-    return res.status(200).json(newProject);
+    return res.status(200).json(newProject); // Return the created project
   } catch (error) {
     console.error("Error in createProject:", error);
-    return res.status(500).json({ error: error.message, customError: "Error in creating project" });
+    return res
+      .status(500)
+      .json({ error: error.message, customError: "Error in creating project" });
   }
 };
 
