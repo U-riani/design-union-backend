@@ -142,7 +142,10 @@ const createProject = async (req, res) => {
           ge: el.heroText.ge,
           en: el.heroText.en,
         },
-        image: el.image,
+        image: {
+          url: el.image.url, // Ensure `url` field matches schema requirements
+          fileName: el.image.fileName, // Ensure `fileName` field matches schema requirements
+        },
       };
 
       const newHeroData = new HeroData(heroData);
