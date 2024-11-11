@@ -110,7 +110,7 @@ const handleProjectsHeroImagesUpload = async (req, res, next) => {
     next(); // Proceed to the next middleware or route handler
   } catch (error) {
     console.error("Error in handleProjectsHeroImagesUpload:", error);
-    res.status(500).json({ message: "Error handling image upload", error });
+    res.status(500).json({ message: "Error handlingprojectsHeros image upload", error });
   }
 };
 
