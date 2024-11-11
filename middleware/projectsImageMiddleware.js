@@ -39,89 +39,38 @@ const uploadToFirebase = (file) => {
 // Middleware to handle image uploads for hero data
 // Middleware to handle image uploads for hero data
 // Middleware to handle image uploads for hero data
-// const handleProjectsHeroImagesUpload = async (req, res, next) => {
-//   try {
-//     // Adjust multer to handle each hero's image upload (matching the heroes[index][imageFile] format)
-//     await upload.array("heroes[0][imageFile]", 10)(req, res, async (err) => {
-//       if (err) {
-//         console.error("Multer error:", err);
-//         return res.status(400).json({
-//           error: "Error in projectsHeroimage upload middleware",
-//           message: err.message,
-//         });
-//       }
-
-//       // If files are uploaded, process each file for Firebase upload
-//       if (req.files) {
-//         const uploadedImageDetails = [];
-//         for (const file of req.files) {
-//           const { fileUrl, fileName } = await uploadToFirebase(file);
-//           uploadedImageDetails.push({ fileUrl, fileName });
-//         }
-
-//         // Assign image URLs and filenames to the request for further processing
-//         req.uploadedImageDetails = uploadedImageDetails;
-//       }
-
-//       next(); // Proceed to the next middleware or route handler
-//     });
-//   } catch (error) {
-//     console.error("Error in handleProjectsHeroImagesUpload:", error);
-//     res.status(500).json({ message: "Error handling image upload", error });
-//   }
-// };
 const handleProjectsHeroImagesUpload = async (req, res, next) => {
   try {
-    const heroes = req.body.heroes; // Ensure this is passed in the request
+    // Adjust multer to handle each hero's image upload (matching the heroes[index][imageFile] format)
+    await upload.array("heroes[0][imageFile]", 10)(req, res, async (err) => {
+      if (err) {
+        console.error("Multer error:", err);
+        return res.status(400).json({
+          error: "Error in projectsHeroimage upload middleware",
+          message: err.message,
+        });
+      }
 
-    if (!heroes) {
-      return res.status(400).json({
-        message: 'Heroes handleProjectsHeroImagesUpload data is missing from the request',
-      });
-    }
-
-    const heroUploads = heroes.map((_, index) => {
-      return upload.array(`heroes[${index}][imageFile]`, 10)(req, res, async (err) => {
-        if (err) {
-          console.error(`Multer error for handleProjectsHeroImagesUploadhero ${index}:`, err);
-          return res.status(400).json({
-            error: `Error in projectsHero image upload middleware for hero ${index}`,
-            message: err.message,
-            stack: err.stack,
-          });
+      // If files are uploaded, process each file for Firebase upload
+      if (req.files) {
+        const uploadedImageDetails = [];
+        for (const file of req.files) {
+          const { fileUrl, fileName } = await uploadToFirebase(file);
+          uploadedImageDetails.push({ fileUrl, fileName });
         }
 
-        if (req.files) {
-          const uploadedImageDetails = [];
-          for (const file of req.files) {
-            try {
-              const { fileUrl, fileName } = await uploadToFirebase(file);
-              uploadedImageDetails.push({ fileUrl, fileName });
-            } catch (firebaseError) {
-              console.error('Firebase upload error for handleProjectsHeroImagesUpload hero', index, firebaseError);
-              return res.status(500).json({
-                error: `Error uploading handleProjectsHeroImagesUpload images for hero ${index} to Firebase`,
-                message: firebaseError.message,
-                stack: firebaseError.stack,
-              });
-            }
-          }
-
-          if (!req.uploadedImageDetails) {
-            req.uploadedImageDetails = [];
-          }
-          req.uploadedImageDetails[index] = uploadedImageDetails;
-        }
-      });
+        // Assign image URLs and filenames to the request for further processing
+        req.uploadedImageDetails = uploadedImageDetails;
+      }
+      
+      next(); // Proceed to the next middleware or route handler
     });
-
-    await Promise.all(heroUploads);
-    next(); // Proceed to next middleware or route handler
   } catch (error) {
     console.error("Error in handleProjectsHeroImagesUpload:", error);
-    res.status(500).json({ message: "Error handling projectsHero images upload", error: error.message, stack: error.stack });
+    res.status(500).json({ message: "Error handling image upload", error });
   }
 };
+
 
 
 module.exports = {
