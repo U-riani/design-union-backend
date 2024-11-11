@@ -38,9 +38,10 @@ const uploadToFirebase = (file) => {
 
 // Middleware to handle image uploads for hero data
 // Middleware to handle image uploads for hero data
+// Middleware to handle image uploads for hero data
 const handleProjectsHeroImagesUpload = async (req, res, next) => {
   try {
-    // Adjust the field name to handle multiple hero image uploads
+    // Adjust multer to handle each hero's image upload (matching the heroes[index][imageFile] format)
     await upload.array("heroes[0][imageFile]", 10)(req, res, async (err) => {
       if (err) {
         console.error("Multer error:", err);
@@ -69,6 +70,7 @@ const handleProjectsHeroImagesUpload = async (req, res, next) => {
     res.status(500).json({ message: "Error handling image upload", error });
   }
 };
+
 
 
 module.exports = {

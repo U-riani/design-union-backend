@@ -9,10 +9,6 @@ const getAllProjects = async (req, res) => {
   try {
     const projects = await Projects.find().populate({
       path: "heroData",
-      populate: {
-        path: "images",
-        model: "HeroImage",
-      },
     });
     // const allProjects =
     return res.status(200).json(projects);
