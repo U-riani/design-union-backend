@@ -72,14 +72,22 @@ const uploadToFirebase = (file) => {
 // };
 const handleProjectsHeroImagesUpload = async (req, res, next) => {
   try {
+    const heroes = req.body.heroes; // Ensure this is passed in the request
+
+    if (!heroes) {
+      return res.status(400).json({
+        message: 'Heroes handleProjectsHeroImagesUpload data is missing from the request',
+      });
+    }
+
     const heroUploads = heroes.map((_, index) => {
       return upload.array(`heroes[${index}][imageFile]`, 10)(req, res, async (err) => {
         if (err) {
-          console.error(`Multer error for projectsHero hero ${index}:`, err);
+          console.error(`Multer error for handleProjectsHeroImagesUploadhero ${index}:`, err);
           return res.status(400).json({
-            error: `Error in projectsHeroimage upload middleware for hero ${index}`,
+            error: `Error in projectsHero image upload middleware for hero ${index}`,
             message: err.message,
-            stack: err.stack,  // Log stack trace for better insight
+            stack: err.stack,
           });
         }
 
@@ -90,11 +98,11 @@ const handleProjectsHeroImagesUpload = async (req, res, next) => {
               const { fileUrl, fileName } = await uploadToFirebase(file);
               uploadedImageDetails.push({ fileUrl, fileName });
             } catch (firebaseError) {
-              console.error('Firebase upload error for projectsHero', index, firebaseError);
+              console.error('Firebase upload error for handleProjectsHeroImagesUpload hero', index, firebaseError);
               return res.status(500).json({
-                error: `Error uploading projectsHero images for hero ${index} to Firebase`,
+                error: `Error uploading handleProjectsHeroImagesUpload images for hero ${index} to Firebase`,
                 message: firebaseError.message,
-                stack: firebaseError.stack, // Log stack trace
+                stack: firebaseError.stack,
               });
             }
           }
@@ -114,6 +122,7 @@ const handleProjectsHeroImagesUpload = async (req, res, next) => {
     res.status(500).json({ message: "Error handling projectsHero images upload", error: error.message, stack: error.stack });
   }
 };
+
 
 module.exports = {
   handleProjectsHeroImagesUpload,
