@@ -44,7 +44,7 @@ const handleProjectsHeroImagesUpload = async (req, res, next) => {
       if (err) {
         console.error("Multer error:", err);
         return res.status(400).json({
-          error: "Error in image upload middleware",
+          error: "Error in projectsHeroimage upload middleware",
           message: err.message,
         });
       }
