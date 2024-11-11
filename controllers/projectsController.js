@@ -131,42 +131,99 @@ const getSingleProject = async (req, res) => {
 //       .json({ error: error.message, customError: "Error in creating project" });
 //   }
 // };
+// const createProject = async (req, res) => {
+//   try {
+//     const { name, description, heroes, mainProject } = req.body;
+//     const heroDataIds = [];
+
+//     for (const el of heroes) {
+//       const heroData = {
+//         heroText: {
+//           ge: el.heroText.ge,
+//           en: el.heroText.en,
+//         },
+//         image: {
+//           url: el.image.url, // Ensure `url` field matches schema requirements
+//           fileName: el.image.fileName, // Ensure `fileName` field matches schema requirements
+//         },
+//       };
+
+//       const newHeroData = new HeroData(heroData);
+//       await newHeroData.save();
+//       heroDataIds.push(newHeroData._id);
+//     }
+
+//     // Create the project with heroData references
+//     const projectData = {
+//       name: {
+//         ge: req.body.name.ge,
+//         en: req.body.name.en,
+//       },
+//       description: {
+//         ge: req.body.description.ge,
+//         en: req.body.description.en,
+//       },
+//       heroData: heroDataIds, // Use the array of heroData IDs
+//       mainProject: req.body.mainProject,
+//     };
+
+//     const newProject = new Projects(projectData);
+//     await newProject.save();
+
+//     return res.status(200).json(newProject);
+//   } catch (error) {
+//     console.error("Error in createProject:", error);
+//     return res
+//       .status(500)
+//       .json({ error: error.message, customError: "Error in creating project" });
+//   }
+// };
 const createProject = async (req, res) => {
   try {
     const { name, description, heroes, mainProject } = req.body;
     const heroDataIds = [];
 
-    for (const el of heroes) {
+    // Ensure that the image URLs and filenames are available from the middleware
+    const uploadedImageDetails = req.uploadedImageDetails || [];
+
+    for (const [index, el] of heroes.entries()) {
       const heroData = {
         heroText: {
           ge: el.heroText.ge,
           en: el.heroText.en,
         },
         image: {
-          url: el.image.url, // Ensure `url` field matches schema requirements
-          fileName: el.image.fileName, // Ensure `fileName` field matches schema requirements
+          // Use the image details from the middleware
+          url: uploadedImageDetails[index]
+            ? uploadedImageDetails[index].fileUrl
+            : el.image.url,
+          fileName: uploadedImageDetails[index]
+            ? uploadedImageDetails[index].fileName
+            : el.image.fileName,
         },
       };
 
+      // Create and save HeroData instance
       const newHeroData = new HeroData(heroData);
       await newHeroData.save();
-      heroDataIds.push(newHeroData._id);
+      heroDataIds.push(newHeroData._id); // Store the heroData ID
     }
 
-    // Create the project with heroData references
+    // Create the project with the HeroData references
     const projectData = {
       name: {
-        ge: req.body.name.ge,
-        en: req.body.name.en,
+        ge: name.ge,
+        en: name.en,
       },
       description: {
-        ge: req.body.description.ge,
-        en: req.body.description.en,
+        ge: description.ge,
+        en: description.en,
       },
-      heroData: heroDataIds, // Use the array of heroData IDs
-      mainProject: req.body.mainProject,
+      heroData: heroDataIds, // References to HeroData documents
+      mainProject: mainProject || false,
     };
 
+    // Save the new project
     const newProject = new Projects(projectData);
     await newProject.save();
 

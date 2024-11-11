@@ -26,7 +26,7 @@ const uploadToFirebase = (file) => {
       try {
         await storageFile.makePublic();
         const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-        resolve(fileUrl);
+        resolve({ fileUrl, fileName });
       } catch (error) {
         reject(error);
       }
@@ -37,81 +37,38 @@ const uploadToFirebase = (file) => {
 };
 
 // Middleware to handle image uploads for hero data
-const handleHeroImageUpload = async (req, res, next) => {
+const handleProjectsHeroImagesUpload = async (req, res, next) => {
   try {
-    // Upload each hero image sent in the form data
+    // Upload each image sent in the form data
     await upload.array("heroData[0][imageFile]", 10)(req, res, async (err) => {
       if (err) {
         console.error("Multer error:", err);
         return res.status(400).json({
-          error: "Error in hero image upload middleware",
+          error: "Error in image upload middleware",
           message: err.message,
         });
       }
 
-      // If files are uploaded, process each file for heroData
+      // If files are uploaded, process each file for Firebase upload
       if (req.files) {
-        const heroImageUrls = [];
+        const uploadedImageDetails = [];
         for (const file of req.files) {
-          const fileUrl = await uploadToFirebase(file);
-          heroImageUrls.push(fileUrl);
+          const { fileUrl, fileName } = await uploadToFirebase(file);
+          uploadedImageDetails.push({ fileUrl, fileName });
         }
 
-        // Assign image URLs to the request for creating projects
-        req.heroImageUrls = heroImageUrls;
+        // Assign image URLs and filenames to the request for further processing
+        req.uploadedImageDetails = uploadedImageDetails;
       }
       
-      next();
+      next(); // Proceed to the next middleware or route handler
     });
   } catch (error) {
-    console.error("Error in handleHeroImageUpload:", error);
-    res.status(500).json({ message: "Error handling hero image upload", error });
-  }
-};
-
-// Middleware to handle image update (replaces images)
-const handleImageUpdate = async (req, res, next) => {
-  try {
-    // Ensure that images are being uploaded
-    if (!req.files || req.files.length === 0) {
-      return next(); // No files to update, skip to next middleware
-    }
-
-    // Upload new images to Firebase
-    const updatedImageUrls = [];
-    for (const file of req.files) {
-      const fileUrl = await uploadToFirebase(file);
-      updatedImageUrls.push(fileUrl);
-    }
-
-    // Attach new image URLs to the request for further processing
-    req.updatedImageUrls = updatedImageUrls;
-
-    next();
-  } catch (error) {
-    console.error("Error in handleImageUpdate:", error);
-    res.status(500).json({ message: "Error handling projecst Heroimage update", error });
-  }
-};
-
-// Function to delete a file from Firebase Storage
-const deleteFromFirebase = async (imageUrl) => {
-  if (!imageUrl) return;
-
-  // Extract the filename from the URL
-  const fileName = imageUrl.split("/").pop();
-  const file = bucket.file(fileName);
-
-  try {
-    await file.delete();
-    console.log("Image deleted successfully from Firebase:", fileName);
-  } catch (error) {
-    console.error("Error deleting image from Firebase:", error);
+    console.error("Error in handleProjectsHeroImagesUpload:", error);
+    res.status(500).json({ message: "Error handling image upload", error });
   }
 };
 
 module.exports = {
-  handleHeroImageUpload,
-  handleImageUpdate,
-  deleteFromFirebase,
+  handleProjectsHeroImagesUpload,
 };

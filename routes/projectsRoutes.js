@@ -6,7 +6,7 @@ const {
   deleteProject,
   updateProject,
 } = require("../controllers/projectsController");
-const { handleImageUpload } = require("../middleware/imageMiddleware");
+const { handleProjectsHeroImagesUpload } = require("../middleware/projectsImageMiddleware");
 // const {
 //   handleHeroImageUpload,
 //   handleImageUpdate,
@@ -19,10 +19,10 @@ router.get("/", getAllProjects);
 
 router.get("/:id", getSingleProject);
 
-router.post("/", handleImageUpload, createProject);
+router.post("/", handleProjectsHeroImagesUpload, createProject);
 
 router.delete("/:id", deleteProject);
 
-router.patch("/:id", handleImageUpload, updateProject);
+router.patch("/:id", handleProjectsHeroImagesUpload, updateProject);
 
 module.exports = router;
