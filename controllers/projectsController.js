@@ -134,48 +134,23 @@ const getSingleProject = async (req, res) => {
 // };
 const createProject = async (req, res) => {
   try {
-    // Ensure req.fileUrls is an array and contains elements
-    if (!req.fileUrls || req.fileUrls.length === 0) {
-      return res.status(400).json({
-        error: "Image URLs are required for hero images.",
-      });
-    }
+   
+    const { name, description, heroes, mainProject } = req.body;
+    const heroDataIds = [];
 
-    const imageUrls = []; // Array to store image document references
-
-    for (const el of req.fileUrls) {
-      console.log("Saving image:", el);
-
-      const imageUrl = el || el.path;
-      if (!imageUrl) {
-        console.error(`Image URL or file path is missing for:`, el);
-        continue;
+    heroes.map(async(el, i) => {
+      const heroData = {
+        heroText: {
+          ge: el.heroText.ge,
+          en: el.heroText.en,
+        },
+        image: el.image
       }
 
-      const newImage = new HeroImage({
-        url: imageUrl,
-        fileName: req.files[0].originalname,
-      });
-
-      const savedImage = await newImage.save();
-      imageUrls.push(savedImage._id);
-    }
-
-    // Collect heroData references
-    const heroDataIds = await Promise.all(
-      req.body.heroText.map(async (el) => {
-        const newHeroData = new HeroData({
-          heroText: {
-            en: el.en,
-            ge: el.ge,
-          },
-          images: imageUrls,
-        });
-
-        const savedHeroData = await newHeroData.save();
-        return savedHeroData._id;
-      })
-    );
+      const newHeroData = new HeroData(heroData);
+      await newHeroData.save();
+      heroDataIds.push(newHeroData._id);
+    })
 
     // Create the project with heroData references
     const projectData = {

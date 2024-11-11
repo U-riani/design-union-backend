@@ -16,12 +16,6 @@ const projectsSchema = new mongoose.Schema(
         ref: "HeroData", // Reference to HeroData schema
       },
     ],
-    images: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "HeroImage", // If images are stored separately in HeroImage collection
-      },
-    ], // Add an array of images, if needed
     mainProject: { type: Boolean, default: false },
     date: { type: Date, default: Date.now },
   },
