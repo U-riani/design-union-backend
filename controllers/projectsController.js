@@ -7,15 +7,14 @@ const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Impo
 // Get all heroes
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Projects.find()
-  .populate({
-    path: 'heroData',
-    populate: {
-      path: 'images',
-      model: 'HeroImage',
-    },
-  });
-    // const allProjects = 
+    const projects = await Projects.find().populate({
+      path: "heroData",
+      populate: {
+        path: "images",
+        model: "HeroImage",
+      },
+    });
+    // const allProjects =
     return res.status(200).json(projects);
   } catch (error) {
     console.error("Error in getAllProjects:", error);
@@ -134,23 +133,22 @@ const getSingleProject = async (req, res) => {
 // };
 const createProject = async (req, res) => {
   try {
-   
     const { name, description, heroes, mainProject } = req.body;
     const heroDataIds = [];
 
-    heroes.map(async(el, i) => {
+    for (const el of heroes) {
       const heroData = {
         heroText: {
           ge: el.heroText.ge,
           en: el.heroText.en,
         },
-        image: el.image
-      }
+        image: el.image,
+      };
 
       const newHeroData = new HeroData(heroData);
       await newHeroData.save();
       heroDataIds.push(newHeroData._id);
-    })
+    }
 
     // Create the project with heroData references
     const projectData = {
@@ -172,10 +170,11 @@ const createProject = async (req, res) => {
     return res.status(200).json(newProject);
   } catch (error) {
     console.error("Error in createProject:", error);
-    return res.status(500).json({ error: error.message, customError: "Error in creating project" });
+    return res
+      .status(500)
+      .json({ error: error.message, customError: "Error in creating project" });
   }
 };
-
 
 // Delete a hero
 const deleteProject = async (req, res) => {
