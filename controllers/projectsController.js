@@ -22,7 +22,7 @@ const getAllProjects = async (req, res) => {
 const getSingleProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const singleProject = await Projects.findById(id);
+    const singleProject = await Projects.findById(id).populate({path: "heroData"});
     if (!singleProject) {
       return res.status(404).json({ message: "Project not found" });
     }
