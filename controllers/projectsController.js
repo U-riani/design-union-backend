@@ -178,6 +178,7 @@ const createProject = async (req, res) => {
   try {
     const { name, description, heroes, mainProject } = req.body;
     const heroDataIds = [];
+    console.log(req.body)
 
     // Ensure that the image URLs and filenames are available from the middleware
     const uploadedImageDetails = req.uploadedImageDetails || [];
@@ -268,10 +269,6 @@ const updateProject = async (req, res) => {
         en: req.body.description.ge,
         ge: req.body.description.ge,
       },
-      heroText: {
-        en: req.body.heroText.en,
-        ge: req.body.heroText.ge,
-      },
     };
 
     // Find existing project document
@@ -280,16 +277,16 @@ const updateProject = async (req, res) => {
       return res.status(404).json({ message: "Project not found to update" });
     }
 
-    // Handle image updates if new images are uploaded
-    if (req.fileUrls && req.fileUrls.length > 0) {
-      // Delete old image(s)
-      if (singleProjectInfo.image && singleProjectInfo.image.length > 0) {
-        await deleteFromFirebase(singleProjectInfo.image[0]);
-      }
+    // // Handle image updates if new images are uploaded
+    // if (req.fileUrls && req.fileUrls.length > 0) {
+    //   // Delete old image(s)
+    //   if (singleProjectInfo.image && singleProjectInfo.image.length > 0) {
+    //     await deleteFromFirebase(singleProjectInfo.image[0]);
+    //   }
 
-      // Set new images
-      updatedData.image = req.fileUrls;
-    }
+    //   // Set new images
+    //   updatedData.image = req.fileUrls;
+    // }
 
     const updatedProject = await Projects.findByIdAndUpdate(id, updatedData, {
       new: true,
