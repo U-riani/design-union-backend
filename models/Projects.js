@@ -17,6 +17,12 @@ const projectsSchema = new mongoose.Schema(
       },
     ],
     mainProject: { type: Boolean, default: false },
+    projectContent: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProjectContent", // Reference to ProjectContent schema
+      },
+    ],
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }

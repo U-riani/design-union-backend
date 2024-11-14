@@ -6,7 +6,8 @@ const {
   deleteProject,
   updateProject,
 } = require("../controllers/projectsController");
-const { handleProjectsHeroImagesUpload } = require("../middleware/projectsImageMiddleware");
+// const { handleProjectsHeroImagesUpload } = require("../middleware/projectsImageMiddleware");
+const { handleImageUpload } = require('../middleware/imageMiddleware');
 // const {
 //   handleHeroImageUpload,
 //   handleImageUpdate,
@@ -19,10 +20,10 @@ router.get("/", getAllProjects);
 
 router.get("/:id", getSingleProject);
 
-router.post("/", handleProjectsHeroImagesUpload, createProject);
+router.post("/", handleImageUpload, createProject);
 
 router.delete("/:id", deleteProject);
 
-router.patch("/:id", handleProjectsHeroImagesUpload, updateProject);
+// router.patch("/:id", handleImageUpload, updateProject);
 
 module.exports = router;

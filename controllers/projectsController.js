@@ -7,9 +7,11 @@ const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Impo
 // Get all heroes
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Projects.find().populate({
-      path: "heroData",
-    });
+    const projects = await Projects.find().populate([
+      { path: "heroData" },
+      { path: "projectContent" }
+    ]);
+    
     // const allProjects =
     return res.status(200).json(projects);
   } catch (error) {
@@ -22,7 +24,10 @@ const getAllProjects = async (req, res) => {
 const getSingleProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const singleProject = await Projects.findById(id).populate({path: "heroData"});
+    const singleProject = await Projects.findById(id).populate([
+      { path: "heroData" },
+      { path: "projectContent" }
+    ]);
     if (!singleProject) {
       return res.status(404).json({ message: "Project not found" });
     }
@@ -174,39 +179,81 @@ const getSingleProject = async (req, res) => {
 //       .json({ error: error.message, customError: "Error in creating project" });
 //   }
 // };
+// const createProject = async (req, res) => {
+//   try {
+//     const { name, description, mainProject } = req.body;
+//     const heroDataIds = [];
+//     console.log(req.body);
+
+//     // Ensure that the image URLs and filenames are available from the middleware
+//     const uploadedImageDetails = req.uploadedImageDetails || [];
+
+//     const newData = {
+//       heroText: {
+//         ge: req.body.heroText.ge,
+//         en: req.body.heroText.en,
+//       },
+//       image: {
+//         // Use the image details from the middleware
+//         url: req.fileUrls[0],
+//       },
+//     };
+
+//     // Create and save HeroData instance
+//     const newHeroData = new HeroData(newData);
+//     await newHeroData.save();
+//     heroDataIds.push(newHeroData._id); // Store the heroData ID
+
+//     // Create the project with the HeroData references
+//     const projectData = {
+//       name: {
+//         ge: name.ge,
+//         en: name.en,
+//       },
+//       description: {
+//         ge: description.ge,
+//         en: description.en,
+//       },
+//       heroData: heroDataIds, // References to HeroData documents
+//       mainProject: mainProject || false,
+//     };
+
+//     // Save the new project
+//     const newProject = new Projects(projectData);
+//     await newProject.save();
+
+//     return res.status(200).json(newProject);
+//   } catch (error) {
+//     console.error("Error in createProject:", error);
+//     return res
+//       .status(500)
+//       .json({ error: error.message, customError: "Error in creating project" });
+//   }
+// };
+
+// Delete a hero
 const createProject = async (req, res) => {
   try {
-    const { name, description, heroes, mainProject } = req.body;
+    const { name, description, mainProject } = req.body;
     const heroDataIds = [];
-    console.log(req.body)
 
-    // Ensure that the image URLs and filenames are available from the middleware
-    const uploadedImageDetails = req.uploadedImageDetails || [];
+    // Process hero data
+    const newData = {
+      heroText: {
+        ge: req.body.heroText.ge,
+        en: req.body.heroText.en,
+      },
+      image: {
+        url: req.fileUrls[0],
+      }, // Use all uploaded image URLs
+    };
 
-    for (const [index, el] of heroes.entries()) {
-      const heroData = {
-        heroText: {
-          ge: el.heroText.ge,
-          en: el.heroText.en,
-        },
-        image: {
-          // Use the image details from the middleware
-          url: uploadedImageDetails[index]
-            ? uploadedImageDetails[index].fileUrl
-            : el.image.url,
-          fileName: uploadedImageDetails[index]
-            ? uploadedImageDetails[index].fileName
-            : el.image.fileName,
-        },
-      };
+    // Save HeroData instance and store its ID
+    const newHeroData = new HeroData(newData);
+    await newHeroData.save();
+    heroDataIds.push(newHeroData._id); // Store the heroData ID
 
-      // Create and save HeroData instance
-      const newHeroData = new HeroData(heroData);
-      await newHeroData.save();
-      heroDataIds.push(newHeroData._id); // Store the heroData ID
-    }
-
-    // Create the project with the HeroData references
+    // Prepare and save project with HeroData references
     const projectData = {
       name: {
         ge: name.ge,
@@ -220,20 +267,16 @@ const createProject = async (req, res) => {
       mainProject: mainProject || false,
     };
 
-    // Save the new project
     const newProject = new Projects(projectData);
     await newProject.save();
 
-    return res.status(200).json(newProject);
+    return res.status(200).json({ url: req.fileUrls[0]});
   } catch (error) {
     console.error("Error in createProject:", error);
-    return res
-      .status(500)
-      .json({ error: error.message, customError: "Error in creating project" });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-// Delete a hero
 const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -243,13 +286,22 @@ const deleteProject = async (req, res) => {
       return res.status(404).json({ message: "No such Project to delete" });
     }
 
-    // Delete associated image(s) from Firebase
-    if (singleProject.image && singleProject.image.length > 0) {
-      await deleteFromFirebase(singleProject.image[0]);
+    const myArr = [];
+
+    for (const heroDataId of singleProject.heroData) {
+      const heroData = await HeroData.findByIdAndDelete(heroDataId);
+      // // Delete associated image(s) from Firebase
+      if (heroData && heroData.image && heroData.image.url) {
+        await deleteFromFirebase(heroData.image.url);
+      }
     }
 
     await Projects.findByIdAndDelete(id);
-    res.status(200).json({ message: "Project deleted successfully" });
+
+    // await Projects.findByIdAndDelete(id);
+    res
+      .status(200)
+      .json({ message: "Project deleted successfully", singleProject });
   } catch (error) {
     console.error("Error in deleteProject:", error);
     return res.status(500).json(error);

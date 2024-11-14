@@ -42,7 +42,7 @@ const uploadToFirebase = (file) => {
 const handleProjectsHeroImagesUpload = async (req, res, next) => {
   try {
     // Adjust multer to handle each hero's image upload (matching the heroes[index][imageFile] format)
-    await upload.array("heroes[0][imageFile]", 10)(req, res, async (err) => {
+    await upload.array("heroeDataImageFile", 10)(req, res, async (err) => {
       if (err) {
         console.error("Multer error:", err);
         return res.status(400).json({
@@ -62,7 +62,7 @@ const handleProjectsHeroImagesUpload = async (req, res, next) => {
         // Assign image URLs and filenames to the request for further processing
         req.uploadedImageDetails = uploadedImageDetails;
       }
-      
+
       next(); // Proceed to the next middleware or route handler
     });
   } catch (error) {
@@ -71,8 +71,27 @@ const handleProjectsHeroImagesUpload = async (req, res, next) => {
   }
 };
 
+const deleteProjectsHeroImagesFromFirebase = (fileName) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const storageFile = bucket.file(fileName);
 
+      // Check if the file exists before attempting to delete
+      const [exists] = await storageFile.exists();
+      if (!exists) {
+        return reject(`in projectsImageMiddleware File not found: ${fileName}`);
+      }
+
+      await storageFile.delete();
+      resolve(`File deleted successfully projectsImageMiddleware: ${fileName}`);
+    } catch (error) {
+      console.error("Error projectsImageMiddleware deleting file from Firebase:", error);
+      reject("Error in projectsImageMiddleware deleting file from Firebase");
+    }
+  });
+};
 
 module.exports = {
   handleProjectsHeroImagesUpload,
+  deleteProjectsHeroImagesFromFirebase
 };

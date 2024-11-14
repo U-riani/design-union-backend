@@ -8,7 +8,7 @@ const heroDataSchema = new mongoose.Schema(
     },
     image: {
       url: { type: String, required: true },
-      fileName: { type: String, required: true },
+      // fileName: { type: String, required: true },
     },
   },
   { timestamps: true }
