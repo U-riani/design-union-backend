@@ -13,10 +13,15 @@ const projectContentSchema = new mongoose.Schema(
 
       images: [
         {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "ProjectContentImage", // Reference to HeroData schema
+          url: { type: String },
         },
       ],
+    //   images: [
+    //     {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "ProjectContentImage", // Reference to HeroData schema
+    //     },
+    //   ],
     },
   },
   { timestamps: true }

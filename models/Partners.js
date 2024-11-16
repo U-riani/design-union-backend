@@ -4,11 +4,14 @@ const partnersSchema = new mongoose.Schema(
   {
     name: {
       en: String,
-      ge: String, 
+      ge: String,
     },
     text: {
       en: String,
-      ge: String, 
+      ge: String,
+    },
+    websiteUrl: {
+      type: String,
     },
     image: [{ type: String }],
     date: { type: Date, default: Date.now },

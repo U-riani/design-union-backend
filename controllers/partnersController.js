@@ -31,6 +31,7 @@ const getSinglePartner = async (req, res) => {
 const createPartner = async (req, res) => {
   try {
     const partnerData = {
+      websiteUrl: req.body.websiteUrl,
       name: {
         ge: req.body.name.ge,
         en: req.body.name.en,
@@ -42,8 +43,10 @@ const createPartner = async (req, res) => {
       image: req.fileUrls || [], // Use `fileUrls` from middleware
     };
 
+
     const newPartners = new Partners(partnerData);
     await newPartners.save();
+    
     return res.status(200).json(newPartners);
   } catch (error) {
     console.error("Error in create Partner:", error);
@@ -87,7 +90,9 @@ const updatePartner = async (req, res) => {
         en: req.body.text.en,
         ge: req.body.text.ge,
       },
+      websiteUrl: req.body.websiteUrl,
     };
+
 
     // Find existing partner document
     const singlePartnerInfo = await Partners.findById(id);
@@ -104,7 +109,7 @@ const updatePartner = async (req, res) => {
 
       // Set new images
       updatedData.image = req.fileUrls;
-    }
+    } 
 
     const updatedPartner = await Partners.findByIdAndUpdate(id, updatedData, {
       new: true,

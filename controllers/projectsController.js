@@ -1,6 +1,7 @@
 const Projects = require("../models/Projects");
 const HeroImage = require("../models/HeroImage");
 const HeroData = require("../models/HeroData");
+const ProjectContent = require("../models/ProjectContent");
 
 const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
 
@@ -9,9 +10,9 @@ const getAllProjects = async (req, res) => {
   try {
     const projects = await Projects.find().populate([
       { path: "heroData" },
-      { path: "projectContent" }
+      { path: "projectContent" },
     ]);
-    
+
     // const allProjects =
     return res.status(200).json(projects);
   } catch (error) {
@@ -20,13 +21,38 @@ const getAllProjects = async (req, res) => {
   }
 };
 
+const getAllprojectsImageAndTitle = async (req, res) => {
+  try {
+    const projectsArr = []
+    const projects = await Projects.find().populate({path: 'heroData'});
+    for(const proj of projects) {
+      const nameImageId = {}
+      nameImageId.id = proj._id
+      nameImageId.name = proj.name
+      nameImageId.image = proj.heroData[0].image.url;
+      projectsArr.push(nameImageId)
+    }
+    // const projects = await Projects.find()
+    // .select('name') // Correctly reference nested fields
+    // .populate({
+    //   path: 'heroData',
+    //   select: 'image.url', // Select specific fields for the populated data
+    // });
+  
+    return res.status(200).json(projectsArr);
+  } catch (error) {
+    console.error("Error in getAllProjects:", error);
+    return res.status(500).json({ error, customError: "Error in getAll hero" });
+  }
+}
+
 // Get a single hero
 const getSingleProject = async (req, res) => {
   try {
     const { id } = req.params;
     const singleProject = await Projects.findById(id).populate([
       { path: "heroData" },
-      { path: "projectContent" }
+      { path: "projectContent" },
     ]);
     if (!singleProject) {
       return res.status(404).json({ message: "Project not found" });
@@ -270,45 +296,116 @@ const createProject = async (req, res) => {
     const newProject = new Projects(projectData);
     await newProject.save();
 
-    return res.status(200).json({ url: req.fileUrls[0]});
+    return res.status(200).json({ url: req.fileUrls[0] });
   } catch (error) {
     console.error("Error in createProject:", error);
     return res.status(500).json({ error: error.message });
   }
 };
 
+// const deleteProject = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const singleProject = await Projects.findById(id);
+//     if (!singleProject) {
+//       return res.status(404).json({ message: "No such Project to delete" });
+//     }
+
+//     for (const heroDataId of singleProject.heroData) {
+//       const heroData = await HeroData.findByIdAndDelete(heroDataId);
+//       // // Delete associated image(s) from Firebase
+//       if (heroData && heroData.image && heroData.image.url) {
+//         await deleteFromFirebase(heroData.image.url);
+//       }
+//     }
+
+//     const projectContentsId = singleProject.projectContent;
+//     if (!projectContentsId) {
+//       return res.status(404).json({ message: "No project COntents" });
+//     }
+
+//     for (const projectContentId of projectContentsId) {
+//       const projectContentDoc = await ProjectContent.findById(projectContentId);
+//       if (
+//         projectContentDoc.media &&
+//         projectContentDoc.media.images &&
+//         projectContentDoc.media.images.length > 0
+//       ) {
+//         for (const image of projectContentDoc.media.images) {
+//           await deleteFromFirebase(image.url);
+//         }
+//       }
+//       await ProjectContent.findByIdAndDelete(projectContentId);
+//       // singleProject.projectContent.shift();
+
+//       // await singleProject.save();
+//     }
+
+//     await Projects.findByIdAndDelete(id);
+
+//     res
+//       .status(200)
+//       .json({ message: "Project deleted successfully" });
+//   } catch (error) {
+//     console.error("Error in deleteProject:", error);
+//     return res.status(500).json(error);
+//   }
+// };
+
+// Update a Project
 const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Find the project to be deleted
     const singleProject = await Projects.findById(id);
     if (!singleProject) {
       return res.status(404).json({ message: "No such Project to delete" });
     }
 
-    const myArr = [];
-
+    // Delete associated HeroData and images from Firebase
     for (const heroDataId of singleProject.heroData) {
       const heroData = await HeroData.findByIdAndDelete(heroDataId);
-      // // Delete associated image(s) from Firebase
       if (heroData && heroData.image && heroData.image.url) {
         await deleteFromFirebase(heroData.image.url);
       }
     }
 
+    // Check if there are associated projectContents
+    const projectContentsId = singleProject.projectContent;
+    if (!projectContentsId || projectContentsId.length === 0) {
+      return res.status(404).json({ message: "No project contents to delete" });
+    }
+
+    // Delete associated ProjectContent and images from Firebase
+    for (const projectContentId of projectContentsId) {
+      const projectContentDoc = await ProjectContent.findById(projectContentId);
+      if (projectContentDoc) {
+        // Delete images from Firebase if they exist
+        if (projectContentDoc.media && projectContentDoc.media.images && projectContentDoc.media.images.length > 0) {
+          for (const image of projectContentDoc.media.images) {
+            await deleteFromFirebase(image.url);
+          }
+        }
+
+        // Delete the project content document
+        await ProjectContent.findByIdAndDelete(projectContentId);
+      }
+    }
+
+    // Finally, delete the project itself
     await Projects.findByIdAndDelete(id);
 
-    // await Projects.findByIdAndDelete(id);
-    res
-      .status(200)
-      .json({ message: "Project deleted successfully", singleProject });
+    // Return success message
+    res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
     console.error("Error in deleteProject:", error);
-    return res.status(500).json(error);
+    return res.status(500).json({ message: "Error deleting project", error });
   }
 };
 
-// Update a Project
+
 const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -353,6 +450,7 @@ const updateProject = async (req, res) => {
 };
 
 module.exports = {
+  getAllprojectsImageAndTitle,
   getSingleProject,
   getAllProjects,
   createProject,
