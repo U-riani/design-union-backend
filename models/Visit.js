@@ -6,6 +6,7 @@ const visitSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   message: { type: String },
   visitDate: { type: Date, required: true, unique: true }, // Ensure the visitDate is unique
+  selectedTime: {type: String}
 });
 
 const Visit = mongoose.model('Visit', visitSchema);

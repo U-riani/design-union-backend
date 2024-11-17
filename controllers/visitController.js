@@ -3,7 +3,7 @@ const Visit = require("../models/Visit"); // Adjust the path to your Visit model
 // Create a new visit
 const bookVisit = async (req, res) => {
   try {
-    const { name, email, phone, message, visitDate } = req.body;
+    const { name, email, phone, message, visitDate, selectedTime } = req.body;
 
     // Check for existing bookings at the same time
     const existingVisit = await Visit.findOne({ visitDate });
@@ -19,6 +19,7 @@ const bookVisit = async (req, res) => {
       phone,
       message,
       visitDate,
+      selectedTime
     });
 
     await newVisit.save();
@@ -48,7 +49,7 @@ const getAllVisits = async (req, res) => {
 const getBookedTimes = async (req, res) => {
   try {
     // Find all visits within the specified date
-    const bookedVisits = await Visit.find().select("visitDate");
+    const bookedVisits = await Visit.find().select("visitDate selectedTime");
 
     // Extract booked times from visits
     
