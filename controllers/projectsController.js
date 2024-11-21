@@ -29,7 +29,7 @@ const getAllprojectsImageAndTitle = async (req, res) => {
       const nameImageId = {}
       nameImageId.id = proj._id
       nameImageId.name = proj.name
-      nameImageId.image = proj.heroData[0].image.url;
+      nameImageId.image = proj.heroData[0]?.image || '';
       projectsArr.push(nameImageId)
     }
     // const projects = await Projects.find()
@@ -38,11 +38,12 @@ const getAllprojectsImageAndTitle = async (req, res) => {
     //   path: 'heroData',
     //   select: 'image.url', // Select specific fields for the populated data
     // });
+
   
     return res.status(200).json(projectsArr);
   } catch (error) {
-    console.error("Error in getAllProjects:", error);
-    return res.status(500).json({ error, customError: "Error in getAll hero" });
+    console.error("Error in getAllprojectsImageAndTitle:", error);
+    return res.status(500).json({ error, customError: "Error in getAll heross title and image" });
   }
 }
 

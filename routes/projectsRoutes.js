@@ -18,6 +18,7 @@ const { handleImageUpload } = require('../middleware/imageMiddleware');
 const router = express.Router();
 
 router.get("/", getAllProjects);
+
 router.get("/projectsImageTitle", getAllprojectsImageAndTitle);
 
 router.get("/:id", getSingleProject);
