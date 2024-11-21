@@ -23,14 +23,14 @@ const getAllProjects = async (req, res) => {
 
 const getAllprojectsImageAndTitle = async (req, res) => {
   try {
-    const projectsArr = []
-    const projects = await Projects.find().populate({path: 'heroData'});
-    for(const proj of projects) {
-      const nameImageId = {}
-      nameImageId.id = proj._id
-      nameImageId.name = proj.name
-      nameImageId.image = proj.heroData[0]?.image || '';
-      projectsArr.push(nameImageId)
+    const projectsArr = [];
+    const projects = await Projects.find().populate({ path: "heroData" });
+    for (const proj of projects) {
+      const nameImageId = {};
+      nameImageId.id = proj._id;
+      nameImageId.name = proj.name;
+      nameImageId.image = proj.heroData[0]?.image || "";
+      projectsArr.push(nameImageId);
     }
     // const projects = await Projects.find()
     // .select('name') // Correctly reference nested fields
@@ -39,13 +39,14 @@ const getAllprojectsImageAndTitle = async (req, res) => {
     //   select: 'image.url', // Select specific fields for the populated data
     // });
 
-  
     return res.status(200).json(projectsArr);
   } catch (error) {
     console.error("Error in getAllprojectsImageAndTitle:", error);
-    return res.status(500).json({ error, customError: "Error in getAll heross title and image" });
+    return res
+      .status(500)
+      .json({ error, customError: "Error in getAll heross title and image" });
   }
-}
+};
 
 // Get a single hero
 const getSingleProject = async (req, res) => {
@@ -366,32 +367,40 @@ const deleteProject = async (req, res) => {
     }
 
     // Delete associated HeroData and images from Firebase
-    for (const heroDataId of singleProject.heroData) {
-      const heroData = await HeroData.findByIdAndDelete(heroDataId);
-      if (heroData && heroData.image && heroData.image.url) {
-        await deleteFromFirebase(heroData.image.url);
+    if (singleProject.heroData || singleProject.heroData.length > 0) {
+      for (const heroDataId of singleProject.heroData) {
+        const heroData = await HeroData.findByIdAndDelete(heroDataId);
+        if (heroData && heroData.image && heroData.image.url) {
+          await deleteFromFirebase(heroData.image.url);
+        }
       }
     }
 
     // Check if there are associated projectContents
     const projectContentsId = singleProject.projectContent;
-    if (!projectContentsId || projectContentsId.length === 0) {
-      return res.status(404).json({ message: "No project contents to delete" });
-    }
+    if (projectContentsId || projectContentsId.length > 0) {
+      // return res.status(404).json({ message: "No project contents to delete" });
 
-    // Delete associated ProjectContent and images from Firebase
-    for (const projectContentId of projectContentsId) {
-      const projectContentDoc = await ProjectContent.findById(projectContentId);
-      if (projectContentDoc) {
-        // Delete images from Firebase if they exist
-        if (projectContentDoc.media && projectContentDoc.media.images && projectContentDoc.media.images.length > 0) {
-          for (const image of projectContentDoc.media.images) {
-            await deleteFromFirebase(image.url);
+      // Delete associated ProjectContent and images from Firebase
+      for (const projectContentId of projectContentsId) {
+        const projectContentDoc = await ProjectContent.findById(
+          projectContentId
+        );
+        if (projectContentDoc) {
+          // Delete images from Firebase if they exist
+          if (
+            projectContentDoc.media &&
+            projectContentDoc.media.images &&
+            projectContentDoc.media.images.length > 0
+          ) {
+            for (const image of projectContentDoc.media.images) {
+              await deleteFromFirebase(image.url);
+            }
           }
-        }
 
-        // Delete the project content document
-        await ProjectContent.findByIdAndDelete(projectContentId);
+          // Delete the project content document
+          await ProjectContent.findByIdAndDelete(projectContentId);
+        }
       }
     }
 
@@ -405,7 +414,6 @@ const deleteProject = async (req, res) => {
     return res.status(500).json({ message: "Error deleting project", error });
   }
 };
-
 
 const updateProject = async (req, res) => {
   try {
