@@ -26,11 +26,12 @@ const getLastThreeProjects = async (req, res) => {
     const projects = await Projects.find()
       .sort({ date: -1 })
       .limit(3)
-      .select("name")
+      .select("name _id")
       .populate([{ path: "heroData", select: 'image.url' }])
 
     // Map the projects to return the desired structure
     const formattedProjects = projects.map((project) => ({
+      id: project._id,
       name: project.name,
       image: project.heroData?.[0]?.image?.url || null, // Safely access nested fields
     }));
