@@ -21,6 +21,27 @@ const getAllProjects = async (req, res) => {
   }
 };
 
+const getLastThreeProjects = async (req, res) => {
+  try {
+    const projects = await Projects.find()
+      .sort({ date: -1 })
+      .limit(3)
+      .select("name")
+      .populate([{ path: "heroData", select: 'image.url' }])
+
+    // Map the projects to return the desired structure
+    const formattedProjects = projects.map((project) => ({
+      name: project.name,
+      image: project.heroData?.[0]?.image?.url || null, // Safely access nested fields
+    }));
+
+    return res.status(200).json(formattedProjects);
+  } catch (error) {
+    console.error("Error in getA Last 3 projects:", error);
+    return res.status(500).json({ error, customError: "Error in get last 3 projects" });
+  }
+};
+
 const getAllprojectsImageAndTitle = async (req, res) => {
   try {
     const projectsArr = [];
@@ -460,6 +481,7 @@ const updateProject = async (req, res) => {
 
 module.exports = {
   getAllprojectsImageAndTitle,
+  getLastThreeProjects,
   getSingleProject,
   getAllProjects,
   createProject,

@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getSingleProject,
   getAllProjects,
+  getLastThreeProjects,
   createProject,
   deleteProject,
   updateProject,
@@ -18,6 +19,8 @@ const { handleImageUpload } = require('../middleware/imageMiddleware');
 const router = express.Router();
 
 router.get("/", getAllProjects);
+
+router.get("/lastThreeProjects", getLastThreeProjects);
 
 router.get("/projectsImageTitle", getAllprojectsImageAndTitle);
 
