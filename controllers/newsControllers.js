@@ -116,7 +116,7 @@ const getLast5News = async (req, res) => {
     const last5News = await News.find()
       .sort({ date: -1 })
       .limit(5)
-      .select("title images"); // Updated to retrieve the array of images
+      .select("title images text"); // Updated to retrieve the array of images
     res.status(200).json(last5News);
   } catch (error) {
     res
