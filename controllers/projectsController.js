@@ -51,7 +51,7 @@ const getAllprojectsImageTitleText = async (req, res) => {
       const nameImageTextId = {};
       nameImageTextId.id = proj._id;
       nameImageTextId.name = proj.name;
-      nameImageTextId.text = proj.heroText;
+      nameImageTextId.text = proj.heroData[0]?.heroText || {ge: '', en: ''};
       nameImageTextId.image = proj.heroData[0]?.image || "";
       projectsArr.push(nameImageTextId);
     }
