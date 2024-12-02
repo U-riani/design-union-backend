@@ -43,16 +43,17 @@ const getLastThreeProjects = async (req, res) => {
   }
 };
 
-const getAllprojectsImageAndTitle = async (req, res) => {
+const getAllprojectsImageTitleText = async (req, res) => {
   try {
     const projectsArr = [];
     const projects = await Projects.find().populate({ path: "heroData" });
     for (const proj of projects) {
-      const nameImageId = {};
-      nameImageId.id = proj._id;
-      nameImageId.name = proj.name;
-      nameImageId.image = proj.heroData[0]?.image || "";
-      projectsArr.push(nameImageId);
+      const nameImageTextId = {};
+      nameImageTextId.id = proj._id;
+      nameImageTextId.name = proj.name;
+      nameImageTextId.text = proj.heroText;
+      nameImageTextId.image = proj.heroData[0]?.image || "";
+      projectsArr.push(nameImageTextId);
     }
     // const projects = await Projects.find()
     // .select('name') // Correctly reference nested fields
@@ -481,7 +482,7 @@ const updateProject = async (req, res) => {
 };
 
 module.exports = {
-  getAllprojectsImageAndTitle,
+  getAllprojectsImageTitleText,
   getLastThreeProjects,
   getSingleProject,
   getAllProjects,
