@@ -6,7 +6,7 @@ const {
   createProject,
   deleteProject,
   updateProject,
-  getAllprojectsImageAndTitle
+  getAllprojectsImageTitleText
 } = require("../controllers/projectsController");
 // const { handleProjectsHeroImagesUpload } = require("../middleware/projectsImageMiddleware");
 const { handleImageUpload } = require('../middleware/imageMiddleware');
@@ -22,7 +22,7 @@ router.get("/", getAllProjects);
 
 router.get("/lastThreeProjects", getLastThreeProjects);
 
-router.get("/projectsImageTitle", getAllprojectsImageAndTitle);
+router.get("/projectsImageTitleText", getAllprojectsImageTitleText);
 
 router.get("/:id", getSingleProject);
 
