@@ -4,7 +4,7 @@ const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Impo
 // Get all Designers
 const getAllDesigners = async (req, res) => {
   try {
-    const designers = await Designers.find();
+    const designers = await Designers.find().sort({createdAt: -1});
     return res.status(200).json(designers);
   } catch (error) {
     console.error("Error in getAllDesigners:", error);
