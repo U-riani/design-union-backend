@@ -69,7 +69,7 @@ const updateAboutUs = async (req, res) => {
       runValidators: true,
     });
 
-    res.status(200).json(req.fileUrls);
+    res.status(200).json(updatedAboutUs);
   } catch (error) {
     console.error("Failed to update aboutUs:", error);
     res.status(500).json({ message: "Failed to update about us", error });
