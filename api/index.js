@@ -9,6 +9,7 @@ const rateLimit = require("express-rate-limit");
 // Import route handlers
 const adminRoutes = require("../routes/adminRoutes"); // Admin routes
 const newsRoutes = require("../routes/newsRoutes"); // News routes
+const aboutUsRoutes = require("../routes/aboutUsRoutes"); // AboutUs routes
 const imageRouter = require("../routes/imageRouter"); // Image routes
 const visitRoutes = require("../routes/visitRoutes");
 const heroRoutes = require("../routes/heroRoutes");
@@ -86,6 +87,7 @@ mongoose
 // Routes
 app.use("/admin", adminRoutes); // Admin routes
 app.use("/api", newsRoutes); // News routes
+app.use("/api/aboutUs", aboutUsRoutes); // News routes
 app.use("/api/visit", visitRoutes);
 app.use("/api/heros", heroRoutes);
 app.use("/api/partners", partnersRoutes);
