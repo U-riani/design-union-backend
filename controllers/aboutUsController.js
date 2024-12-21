@@ -1,4 +1,5 @@
 const AboutUs = require("../models/AboutUs");
+const AboutUsMainPage = require("../models/AboutUsMainPage");
 const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
 
 // Get  AboutUs
@@ -37,14 +38,13 @@ const createAboutUs = async (req, res) => {
 // Update a AboutUs
 const updateAboutUs = async (req, res) => {
   try {
-    const  id = req.body.id;
+    const id = req.body.id;
     const updatedData = {
       text: {
         ge: req.body.text.ge,
         en: req.body.text.en,
       },
     };
-    console.log('---')
 
     // Find existing AboutUs document
     const aboutUsData = await AboutUs.findById(id);
@@ -54,7 +54,7 @@ const updateAboutUs = async (req, res) => {
 
     // Handle image updates if new images are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
-      console.log('--++++--')
+      console.log("--++++--");
       // Delete old image(s)
       if (aboutUsData.image && aboutUsData.image.length > 0) {
         await deleteFromFirebase(aboutUsData.image[0]);
@@ -69,7 +69,82 @@ const updateAboutUs = async (req, res) => {
       runValidators: true,
     });
 
-    res.status(200).json(updatedAboutUs);
+    return res.status(200).json(updatedAboutUs);
+  } catch (error) {
+    console.error("Failed to update aboutUs:", error);
+    res.status(500).json({ message: "Failed to update about us", error });
+  }
+};
+
+// Create a new aboutUs
+const createAboutUsMainPage = async (req, res) => {
+  try {
+    const data = {
+      text: {
+        ge: req.body.text.ge,
+        en: req.body.text.en,
+      },
+      image: req.fileUrls || [], // Use `fileUrls` from middleware
+    };
+
+    const newAboutUs = new AboutUsMainPage(data);
+    await newAboutUs.save();
+    return res.status(200).json(newAboutUs);
+  } catch (error) {
+    console.error("Error in createAboutUs:", error);
+    res.status(500).json({ error, customError: "Error in create about Us" });
+  }
+};
+
+const getAboutUsMainPage = async (req, res) => {
+  try {
+    const aboutUsData = await AboutUsMainPage.find();
+
+    return res.status(200).json(aboutUsData);
+  } catch (error) {
+    console.error("Failed to update aboutUs:", error);
+    res.status(500).json({ message: "Failed to update about us", error });
+  }
+};
+
+const updateAboutUsMainPage = async (req, res) => {
+  try {
+    const id = req.body.id;
+    const updatedData = {
+      text: {
+        ge: req.body.text.ge,
+        en: req.body.text.en,
+      },
+    };
+
+    // Find existing AboutUs document
+    const aboutUsData = await AboutUsMainPage.findById(id);
+    if (!aboutUsData) {
+      return res.status(404).json({ message: "aboutUs not found to update" });
+    }
+
+    // Handle image updates if new images are uploaded
+    if (req.fileUrls && req.fileUrls.length > 0) {
+      console.log("--++++--");
+      // Delete old image(s)
+      if (aboutUsData.image && aboutUsData.image.length > 0) {
+        await deleteFromFirebase(aboutUsData.image[0]);
+      }
+
+      // Set new images
+      updatedData.image = req.fileUrls;
+    }
+
+    const updatedAboutUs = await AboutUsMainPage.findByIdAndUpdate(
+      id,
+      updatedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.status(200).json(updatedAboutUs);
   } catch (error) {
     console.error("Failed to update aboutUs:", error);
     res.status(500).json({ message: "Failed to update about us", error });
@@ -80,4 +155,7 @@ module.exports = {
   getAboutUs,
   createAboutUs,
   updateAboutUs,
+  createAboutUsMainPage,
+  getAboutUsMainPage,
+  updateAboutUsMainPage,
 };
