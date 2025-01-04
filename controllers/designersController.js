@@ -1,10 +1,11 @@
 const Designers = require("../models/Designers");
 const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
+const { sendMail } = require("./mailController");
 
 // Get all Designers
 const getAllDesigners = async (req, res) => {
   try {
-    const designers = await Designers.find().sort({createdAt: -1});
+    const designers = await Designers.find().sort({ createdAt: -1 });
     return res.status(200).json(designers);
   } catch (error) {
     console.error("Error in getAllDesigners:", error);
@@ -55,6 +56,11 @@ const createDesigner = async (req, res) => {
 
     const newDesigners = new Designers(designerData);
     await newDesigners.save();
+    await sendMail(
+      "sandropapiashvili@gmail.com",
+      "designersunion designer registration",
+      `${designerData.name.ge} wants to register`
+    );
     return res.status(200).json(newDesigners);
   } catch (error) {
     console.error("Error in create Designer:", error);
