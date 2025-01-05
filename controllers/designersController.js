@@ -57,7 +57,12 @@ const createDesigner = async (req, res) => {
     const newDesigners = new Designers(designerData);
     await newDesigners.save();
     await sendMail(
-      "sandropapiashvili@gmail.com",
+      "designersunion.geo@gmail.com",
+      "designersunion designer registration",
+      `${designerData.name.ge} wants to register`
+    );
+    await sendMail(
+      "maisuradzemariami09.07@gmail.com",
       "designersunion designer registration",
       `${designerData.name.ge} wants to register`
     );

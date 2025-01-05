@@ -4,15 +4,15 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail", // You can also use 'outlook', 'yahoo', or your custom SMTP service
   auth: {
-    user: "sandropapiashvili@gmail.com", // Your email
-    pass: "gjpr lqtk yxdk pmsu", // Your email password or app-specific password
+    user: "labdesign565@gmail.com", // Your email
+    pass: "ezii skeu bwtf nhgd", // Your email password or app-specific password
   },
 });
 
 // Step 2: Define the sendMail function
 const sendMail = async (sendTo, subject, text ) => {
   const mailOptions = {
-    from: "sandropapiashvili@gmail.com", // Sender address
+    from: "labdesign565@gmail.com", // Sender address
     to: sendTo,
     subject: subject, // Subject line
     text, // Plain text body
