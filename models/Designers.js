@@ -11,6 +11,7 @@ const designersSchema = new mongoose.Schema(
       en: String,
       ge: String, 
     },
+    phone: {type: String},
     facebook: {type: String},
     instagram: {type: String},
     behance: {type: String},
