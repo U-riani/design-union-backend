@@ -67,6 +67,11 @@ const createDesigner = async (req, res) => {
       "designersunion designer registration",
       `${designerData.name.ge} wants to register`
     );
+    await sendMail(
+      "q.urotadze@yahoo.com",
+      "designersunion designer registration",
+      `${designerData.name.ge} wants to register`
+    );
     return res.status(200).json(newDesigners);
   } catch (error) {
     console.error("Error in create Designer:", error);
