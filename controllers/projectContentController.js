@@ -2,6 +2,7 @@ const Projects = require("../models/Projects");
 const ProjectContent = require("../models/ProjectContent");
 const ProjectContentImage = require("../models/ProjectContentImages");
 const { deleteFromFirebase } = require("../middleware/imageMiddleware"); // Import the delete function
+const thumbnailUrl = require("../middleware/thumbnailMiddleware"); // Import the delete function
 
 const getSingleProjectContent = async (req, res) => {
   const { id } = req.params;
@@ -156,8 +157,9 @@ const updateProjectContentTitle = async (req, res) => {
 
 const updateProjectContentVideo = async (req, res) => {
   const { id } = req.params;
-  const { video } = req.body;
+  const { videoId } = req.body;
   const { index } = req.body;
+  console.log(videoId)
 
   try {
     const project = await Projects.findById(id);
@@ -180,18 +182,19 @@ const updateProjectContentVideo = async (req, res) => {
     }
 
     // Push the new video URL to the youtube array in the media field
-    projectContent.media.youtube = video;
+    projectContent.media.youtube.videoId = videoId;
+    projectContent.media.youtube.thumbnail = req.body.thumbnail;
     await projectContent.save();
 
     return res.status(200).json({
-      message: "createProjectContentImage",
+      message: "createProjectContentVideo",
       project,
       updatedContent: projectContent,
     });
   } catch (error) {
     return res
       .status(404)
-      .json({ error, message: "Error createProjectContentImage" });
+      .json({ error, message: "Error createProjectContentVideo" });
   }
 };
 
@@ -253,7 +256,7 @@ const updateProjectContentImage = async (req, res) => {
     //   // Add or update images based on request body
     if (req.fileUrls) {
       if (type === "create") {
-        projectContent.media.youtube = "";
+        projectContent.media.youtube.src = "";
         projectContent.media.images.push({ url: req.fileUrls[0] });
       }
       if (type === "update") {

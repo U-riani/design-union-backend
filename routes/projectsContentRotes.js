@@ -2,16 +2,16 @@ const express = require("express");
 const {
   createProjectContentTitle,
   updateProjectContentTitle,
-//   createProjectContentImage,
+  //   createProjectContentImage,
   deleteProjectContentImage,
   updateProjectContentImage,
   deleteProjectContent,
   updateProjectContent,
   updateProjectContentVideo,
-  getSingleProjectContent
+  getSingleProjectContent,
 } = require("../controllers/projectContentController");
-const { handleImageUpload } = require('../middleware/imageMiddleware');
-
+const { handleImageUpload } = require("../middleware/imageMiddleware");
+const thumbnailUrlMiddleware = require("../middleware/thumbnailMiddleware");
 
 const router = express.Router();
 
@@ -19,11 +19,23 @@ router.post("/projectContentTitle/:id", createProjectContentTitle);
 
 router.patch("/projectContentTitle/:id", updateProjectContentTitle);
 
-router.post("/projectContetnVideo/:id", updateProjectContentVideo);
+router.post(
+  "/projectContetnVideo/:id",
+  thumbnailUrlMiddleware,
+  updateProjectContentVideo
+);
 
-router.patch("/projectContetnVideo/:id", updateProjectContentVideo);
+router.patch(
+  "/projectContetnVideo/:id",
+  thumbnailUrlMiddleware,
+  updateProjectContentVideo
+);
 
-router.patch("/projectContetnImage/:id", handleImageUpload, updateProjectContentImage);
+router.patch(
+  "/projectContetnImage/:id",
+  handleImageUpload,
+  updateProjectContentImage
+);
 
 router.delete("/projectContetnImage/:id", deleteProjectContentImage);
 
