@@ -256,7 +256,7 @@ const updateProjectContentImage = async (req, res) => {
     //   // Add or update images based on request body
     if (req.fileUrls) {
       if (type === "create") {
-        projectContent.media.youtube.src = "";
+        projectContent.media.youtube.videoId = "";
         projectContent.media.images.push({ url: req.fileUrls[0] });
       }
       if (type === "update") {
@@ -289,6 +289,7 @@ const deleteProjectContentImage = async (req, res) => {
   const { id } = req.params;
   const { index, localIndex } = req.query; // const { localIndex } = req.body;
 
+
   try {
     const project = await Projects.findById(id);
     if (!project) {
@@ -301,6 +302,7 @@ const deleteProjectContentImage = async (req, res) => {
         .status(404)
         .json({ message: "No such content at specified index" });
     }
+    console.log("--projectContentId-- ", projectContentId, '++localIndex++ ', localIndex);
 
     // // Find and update the specific ProjectContent document
     const projectContent = await ProjectContent.findById(projectContentId);
@@ -313,6 +315,7 @@ const deleteProjectContentImage = async (req, res) => {
     await deleteFromFirebase(image.url);
     // remove array
     projectContent.media.images.splice(localIndex, 1);
+    // await ProjectContent.images[localIndex].pull({_id: ProjectContent.images[localIndex]._id})
 
     await projectContent.save();
 
