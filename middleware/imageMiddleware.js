@@ -54,7 +54,7 @@ const deleteFromFirebase = async (imageUrl) => {
 // Middleware for handling multiple image uploads and replacement
 const handleImageUpload = async (req, res, next) => {
   try {
-    await upload.array("images", 10)(req, res, async (err) => {
+    await upload.array("images", 20)(req, res, async (err) => {
       if (err) {
         console.error("Multer error:", err);
         return res.status(400).json({
@@ -63,18 +63,34 @@ const handleImageUpload = async (req, res, next) => {
         });
       }
 
-      // If there are files uploaded, handle them
-      if (req.files) {
-        // Upload each new image to Firebase
-        const imageUrls = [];
-        for (const file of req.files) {
-          const fileUrl = await uploadToFirebase(file);
-          imageUrls.push(fileUrl);
-        }
+      // // If there are files uploaded, handle them
+      // if (req.files) {
+      //   // Upload each new image to Firebase
+      //   const imageUrls = [];
+      //   for (const file of req.files) {
+      //     const fileUrl = await uploadToFirebase(file);
+      //     imageUrls.push(fileUrl);
+      //   }
         
-        // Set the file URLs in the request object to pass to the controller
-        req.fileUrls = imageUrls;
+      //   // Set the file URLs in the request object to pass to the controller
+      //   req.fileUrls = imageUrls;
+      // }
+      // If there are uploaded files, process them
+    if (req.files && req.files.length > 0) {
+      console.log(`Uploading ${req.files.length} images to Firebase...`);
+      
+      const uploadPromises = req.files.map(uploadToFirebase);
+      const results = await Promise.allSettled(uploadPromises);
+
+      req.fileUrls = results
+        .filter((res) => res.status === "fulfilled")
+        .map((res) => res.value);
+
+      const failedUploads = results.filter((res) => res.status === "rejected");
+      if (failedUploads.length > 0) {
+        console.warn("Some images failed to upload:", failedUploads);
       }
+    }
 
       next();
     });
