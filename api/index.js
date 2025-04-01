@@ -34,7 +34,7 @@ const allowedOrigins = [
   "http://designersunion.ge",
   "http://www.designersunion.ge",
   "https://www.designersunion.ge",
-  "https://designersunion.ge"
+  "https://designersunion.ge",
 ];
 
 app.use(
