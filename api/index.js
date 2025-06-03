@@ -9,6 +9,7 @@ const rateLimit = require("express-rate-limit");
 // Import route handlers
 const adminRoutes = require("../routes/adminRoutes"); // Admin routes
 const newsRoutes = require("../routes/newsRoutes"); // News routes
+const blogsRoutes = require("../routes/blogsRoutes");
 const aboutUsRoutes = require("../routes/aboutUsRoutes"); // AboutUs routes
 const imageRouter = require("../routes/imageRouter"); // Image routes
 const visitRoutes = require("../routes/visitRoutes");
@@ -88,6 +89,7 @@ mongoose
 // Routes
 app.use("/admin", adminRoutes); // Admin routes
 app.use("/api", newsRoutes); // News routes
+app.use("/api", blogsRoutes); // News routes
 app.use("/api/aboutUs", aboutUsRoutes); // News routes
 app.use("/api/visit", visitRoutes);
 app.use("/api/heros", heroRoutes);
@@ -106,7 +108,7 @@ app.get("/", (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Internal Server Error" });
+  res.status(500).json({ message: "Internal Server Error", stack: err.stack });
 });
 
 app.listen(5000, () => {

@@ -4,7 +4,7 @@ const bucket = require("../firebase"); // Import the bucket from firebase.js
 
 // Init upload middleware to handle multiple files in memory
 const upload = multer({
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB per image
+  limits: { fileSize: 50 * 1024 * 1024 }, // Limit file size to 10MB per image
   storage: multer.memoryStorage(), // Store files in memory
 });
 
