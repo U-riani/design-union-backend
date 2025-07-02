@@ -234,11 +234,11 @@ const createDesigner = async (req, res) => {
 
     // Send notification emails
     const message = `${designerData.name.ge} wants to register`;
-    // await Promise.all([
-    //   sendMail("designersunion.geo@gmail.com", "designersunion designer registration", message),
-    //   sendMail("maisuradzemariami09.07@gmail.com", "designersunion designer registration", message),
-    //   sendMail("q.urotadze@yahoo.com", "designersunion designer registration", message),
-    // ]);
+    await Promise.all([
+      sendMail("designersunion.geo@gmail.com", "designersunion designer registration", message),
+      sendMail("maisuradzemariami09.07@gmail.com", "designersunion designer registration", message),
+      sendMail("q.urotadze@yahoo.com", "designersunion designer registration", message),
+    ]);
 
     return res.status(200).json(newDesigner);
   } catch (error) {
