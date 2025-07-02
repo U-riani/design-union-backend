@@ -54,7 +54,16 @@ const deleteFromFirebase = async (imageUrl) => {
 // Middleware for handling multiple image uploads and replacement
 const handleImageUpload = async (req, res, next) => {
   try {
-    await upload.array("images", 20)(req, res, async (err) => {
+    const isDesignerRoute = req.originalUrl.includes("/designers");
+
+    const multerHandler = isDesignerRoute
+      ? upload.fields([
+          { name: "profileImage", maxCount: 1 },
+          { name: "projectImage", maxCount: 1 },
+        ])
+      : upload.array("images", 20);
+
+    await multerHandler(req, res, async (err) => {
       if (err) {
         console.error("Multer error:", err);
         return res.status(400).json({
@@ -71,26 +80,46 @@ const handleImageUpload = async (req, res, next) => {
       //     const fileUrl = await uploadToFirebase(file);
       //     imageUrls.push(fileUrl);
       //   }
-        
+
       //   // Set the file URLs in the request object to pass to the controller
       //   req.fileUrls = imageUrls;
       // }
       // If there are uploaded files, process them
-    if (req.files && req.files.length > 0) {
-      console.log(`Uploading ${req.files.length} images to Firebase...`);
-      
-      const uploadPromises = req.files.map(uploadToFirebase);
-      const results = await Promise.allSettled(uploadPromises);
+      if (req.files) {
+        if (isDesignerRoute) {
+          // Special handling for designers: separate profile and project image
+          const uploadedUrls = {};
 
-      req.fileUrls = results
-        .filter((res) => res.status === "fulfilled")
-        .map((res) => res.value);
+          if (req.files.profileImage && req.files.profileImage[0]) {
+            uploadedUrls.profileImage = await uploadToFirebase(
+              req.files.profileImage[0]
+            );
+          }
 
-      const failedUploads = results.filter((res) => res.status === "rejected");
-      if (failedUploads.length > 0) {
-        console.warn("Some images failed to upload:", failedUploads);
+          if (req.files.projectImage && req.files.projectImage[0]) {
+            uploadedUrls.projectImage = await uploadToFirebase(
+              req.files.projectImage[0]
+            );
+          }
+
+          req.fileUrls = uploadedUrls;
+        } else {
+          // Generic handling for others
+          const uploadPromises = req.files.map(uploadToFirebase);
+          const results = await Promise.allSettled(uploadPromises);
+
+          req.fileUrls = results
+            .filter((res) => res.status === "fulfilled")
+            .map((res) => res.value);
+
+          const failedUploads = results.filter(
+            (res) => res.status === "rejected"
+          );
+          if (failedUploads.length > 0) {
+            console.warn("Some images failed to upload:", failedUploads);
+          }
+        }
       }
-    }
 
       next();
     });

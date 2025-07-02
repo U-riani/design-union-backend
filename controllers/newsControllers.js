@@ -65,8 +65,6 @@ const updateSingleNews = async (req, res) => {
     if (!singleNewsInfo)
       return res.status(404).json({ message: "News not found" });
 
-
-
     // Update images if new ones are uploaded
     if (req.fileUrls && req.fileUrls.length > 0) {
       // delete all old images
@@ -125,11 +123,37 @@ const getLast5News = async (req, res) => {
   }
 };
 
+const getSomeNews = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // default to page 1
+    const limit = parseInt(req.query.limit) || 12; // default to 10 items per page
+    const skip = (page - 1) * limit;
+
+    // Get paginated data
+    const SomeNews = await News.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalCount = await News.countDocuments(); // ✅
+
+    return res.status(200).json({
+      data: SomeNews,
+      totalCount,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch the some news", error });
+  }
+};
+
 module.exports = {
   saveNews,
   getAllNews,
   getSingleNews,
   getLast5News,
+  getSomeNews,
   updateSingleNews,
   deleteNews,
 };

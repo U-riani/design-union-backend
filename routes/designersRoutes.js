@@ -1,14 +1,24 @@
 const express = require('express');
-const { getAllDesigners, getSingleDesigner, createDesigner, deleteDesigner, updateDesigner } = require('../controllers/designersController');
+const { getAllDesigners, getSingleDesigner, createDesigner, deleteDesigner, updateDesigner, getSomeDesigners, migrateDesignerImages } = require('../controllers/designersController');
 const { handleImageUpload } = require('../middleware/imageMiddleware');
+const rateLimitMiddleware = require('../middleware/rateLimitMiddleware');
+
 
 const router = express.Router();
 
 router.get('/', getAllDesigners);
 
+// router.get('/allDesignersFile', getAllDesignersFile);
+
+// router.get('/getAllDesignersJsonFile', getAllDesignersJsonFile);
+
+// router.get('/migrateDesignerImages', migrateDesignerImages);
+
+router.get('/paginated', getSomeDesigners);
+
 router.get('/:id', getSingleDesigner);
 
-router.post('/', handleImageUpload,  createDesigner);
+router.post('/', rateLimitMiddleware, handleImageUpload,  createDesigner);
 
 router.delete('/:id', deleteDesigner);
 

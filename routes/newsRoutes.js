@@ -56,7 +56,8 @@ const {
   getSingleNews, 
   getLast5News, 
   updateSingleNews, 
-  deleteNews 
+  deleteNews, 
+  getSomeNews
 } = require('../controllers/newsControllers');
 const { validateNewsData } = require('../middleware/newsMiddleware');
 const { handleImageUpload } = require('../middleware/imageMiddleware');
@@ -89,5 +90,7 @@ router.delete('/news/:id', deleteNews);
 
 // Get last 5 news for cardsSlider
 router.get('/last5News', getLast5News);
+
+router.get('/paginated', getSomeNews);
 
 module.exports = router;
