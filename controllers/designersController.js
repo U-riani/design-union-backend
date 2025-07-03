@@ -19,40 +19,28 @@ const getAllDesigners = async (req, res) => {
   }
 };
 
-// // Get all Designers info for backup
-// const getAllDesignersFile = async (req, res) => {
-//   try {
-//     const designers = await Designers.find().sort({ createdAt: -1 });
+const getAllDesignersInfo = async (req, res) => {
+  try {
+    const designers = await Designers.find().sort({ createdAt: -1 });
 
-//     // Prepare text content
-//     const lines = designers.map((designer) => {
-//       const name = designer.name?.ge || "Unnamed";
-//       const phone = designer.phone || "No phone";
-//       return `${name}, ${phone}`;
-//     });
+    // You can optionally filter the data here if needed
+    const formattedDesigners = designers.map((designer) => ({
+      name: designer.name?.ge || "Unnamed",
+      phone: designer.phone || "No phone",
+      email: designer.email || null,           // example extra field
+      companyPerson: designer.companyPerson || null, // optional field
+      _id: designer._id
+    }));
 
-//     const content = lines.join(os.EOL);
+    return res.status(200).json(formattedDesigners);
+  } catch (error) {
+    console.error("Error in getAllDesignersFile:", error);
+    return res
+      .status(500)
+      .json({ error, customError: "Error in getAllDesignersFile" });
+  }
+};
 
-//     // Absolute path to root folder
-//     const fileDir = path.join(__dirname, "..", "allDesignersData");
-//     const filePath = path.join(fileDir, "designers.txt");
-
-//     // Make sure the directory exists
-//     if (!fs.existsSync(fileDir)) {
-//       fs.mkdirSync(fileDir, { recursive: true });
-//     }
-
-//     // Write file to that folder
-//     fs.writeFileSync(filePath, content, "utf-8");
-
-//     return res.status(200).json({ message: "File saved successfully." });
-//   } catch (error) {
-//     console.error("Error in getAllDesigners:", error);
-//     return res
-//       .status(500)
-//       .json({ error, customError: "Error in getAll Designers" });
-//   }
-// };
 
 // Get all Designers
 const getAllDesignersJsonFile = async (req, res) => {
@@ -439,4 +427,5 @@ module.exports = {
   updateDesigner,
   getAllDesignersJsonFile,
   migrateDesignerImages,
+  getAllDesignersInfo
 };
